@@ -8,7 +8,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -17,11 +16,9 @@ public class ApiManager {
 
     private static Activity activity;
     private static RequestQueue requestQueue;
-    private static Gson gson;
 
     private static void init(Activity _activity){
         activity = _activity;
-        gson = new Gson();
 
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(activity);
@@ -35,16 +32,16 @@ public class ApiManager {
                 new JsonObjectRequest(METHOD, URL, JSON_OBJECT, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        CALLBACK.execute(response);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if(ON_ERROR != null){
-                            ON_ERROR.execute();
+                            CALLBACK.execute(response);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            if(ON_ERROR != null){
+                                ON_ERROR.execute();
+                            }
                         }
                     }
-                }
                 )
         );
     }

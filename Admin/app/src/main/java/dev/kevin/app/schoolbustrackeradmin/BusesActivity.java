@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.google.gson.Gson;
@@ -30,7 +32,7 @@ public class BusesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_buses);
 
         lv_drivers = findViewById(R.id.lv_drivers);
-
+        lv_drivers.setOnItemClickListener(new ItemClicked());
     }
 
     @Override
@@ -38,7 +40,6 @@ public class BusesActivity extends AppCompatActivity {
         super.onPostResume();
 
         fetchDrivers();
-
 
     }
 
@@ -65,7 +66,20 @@ public class BusesActivity extends AppCompatActivity {
     }
 
     public void OnClick_newBus(View view){
-        Intent intent = new Intent(getApplicationContext(),BusesForm.class);
+        Intent intent = new Intent(getApplicationContext(),BusesFormActivity.class);
         startActivity(intent);
+    }
+
+    private class ItemClicked implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String strValue = (String) lv_drivers.getItemAtPosition(position);
+            String[] parts = strValue.split(" - ");
+            Intent intent = new Intent(getApplicationContext(), BusDetailsActivity.class);
+            intent.putExtra("bus_no",parts[0]);
+            intent.putExtra("driver",parts[1]);
+            startActivity(intent);
+        }
     }
 }

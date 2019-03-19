@@ -14,7 +14,7 @@ import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
 
-public class BusesForm extends AppCompatActivity {
+public class BusesFormActivity extends AppCompatActivity {
 
     EditText txtBusNo;
     EditText txtDriver;
@@ -53,7 +53,7 @@ public class BusesForm extends AppCompatActivity {
 
         @Override
         public void execute(JSONObject response) {
-            Toast.makeText(BusesForm.this, "Bus has been registered", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BusesFormActivity.this, "Bus has been registered", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
