@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DriversActivity">
+    tools:context=".BusesActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout5"
@@ -15,12 +15,12 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Drivers"
+            app:title="Buses"
             app:titleTextColor="#ffffff"/>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_new_driver"
+        android:id="@+id/fab_new_bus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -32,7 +32,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="OnClick_newBus">
 
     </android.support.design.widget.FloatingActionButton>
 
