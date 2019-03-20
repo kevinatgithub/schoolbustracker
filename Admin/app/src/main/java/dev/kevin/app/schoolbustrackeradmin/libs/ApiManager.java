@@ -3,6 +3,7 @@ package dev.kevin.app.schoolbustrackeradmin.libs;
 import android.app.Activity;
 import android.support.annotation.Nullable;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -43,6 +44,18 @@ public class ApiManager {
                         }
                     }
                 )
+        );
+    }
+
+    public static void execute(final Activity ACTIVITY,final String URL,final CallbackWithResponse CALLBACK){
+        init(ACTIVITY);
+        requestQueue.add(
+                new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        CALLBACK.execute(response);
+                    }
+                }, null)
         );
     }
 

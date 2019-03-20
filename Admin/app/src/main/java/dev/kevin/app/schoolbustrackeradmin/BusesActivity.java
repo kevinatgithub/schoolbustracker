@@ -3,6 +3,8 @@ package dev.kevin.app.schoolbustrackeradmin;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,6 +33,9 @@ public class BusesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buses);
 
+        Toolbar toolbar = findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
         lv_drivers = findViewById(R.id.lv_drivers);
         lv_drivers.setOnItemClickListener(new ItemClicked());
     }
@@ -45,8 +50,7 @@ public class BusesActivity extends AppCompatActivity {
 
     private void fetchDrivers() {
         String url = AppConstants.DOMAIN + "buses";
-        int method = Request.Method.GET;
-        ApiManager.execute(this,url,method,null, new DriversLoaded(),null);
+        ApiManager.execute(this,url,new DriversLoaded());
     }
 
     private class DriversLoaded implements CallbackWithResponse{
@@ -81,5 +85,11 @@ public class BusesActivity extends AppCompatActivity {
             intent.putExtra("driver",parts[1]);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

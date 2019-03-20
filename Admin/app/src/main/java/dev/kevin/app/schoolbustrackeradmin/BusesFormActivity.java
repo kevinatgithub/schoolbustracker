@@ -2,6 +2,8 @@ package dev.kevin.app.schoolbustrackeradmin;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,6 +26,9 @@ public class BusesFormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buses_form);
 
+        Toolbar toolbar = findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
         txtBusNo = findViewById(R.id.txtBusNo);
         txtDriver = findViewById(R.id.txtDriver);
 
@@ -44,9 +49,7 @@ public class BusesFormActivity extends AppCompatActivity {
 
     private void submitBusDetailsToApi(String bus_no, String driver) {
         String url = AppConstants.DOMAIN + "bus/" + bus_no + "/" + driver;
-        int method = Request.Method.GET;
-
-        ApiManager.execute(this,url,method,null,new BusDetailsSaved(),null);
+        ApiManager.execute(this,url,new BusDetailsSaved());
     }
 
     private class BusDetailsSaved implements CallbackWithResponse{
@@ -60,5 +63,11 @@ public class BusesFormActivity extends AppCompatActivity {
 
     public void OnClick_Cancel(View view){
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

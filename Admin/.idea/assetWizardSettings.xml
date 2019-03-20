@@ -23,7 +23,18 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_add_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_back_black_24dp.xml" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="image">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="paddingPercent" value="5" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,8 +44,10 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_plus_w" />
+                                      <entry key="imageAsset" value="C:\Users\Kevin\Downloads\kisspng-school-bus-safety-bus-driver-rylee-fell-asleep-on-the-bus-amp-his-friend-woke-5c6fceaf92fa46.700631931550831279602.png" />
+                                      <entry key="outputName" value="ic_arrow_left_w" />
                                       <entry key="theme" value="HOLO_DARK" />
+                                      <entry key="themeColor" value="e5541c" />
                                     </map>
                                   </option>
                                 </PersistentState>

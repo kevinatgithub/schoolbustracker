@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +33,9 @@ public class BusDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_details);
+
+        Toolbar toolbar = findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         bus_no = intent.getStringExtra("bus_no");
@@ -59,8 +64,7 @@ public class BusDetailsActivity extends AppCompatActivity {
 
     public void OnClick_RemoveBus(View view){
         String url = AppConstants.DOMAIN + "removebus/"+bus_no;
-        int method = Request.Method.GET;
-        ApiManager.execute(this,url,method,null,new RemoveComplete(),null);
+        ApiManager.execute(this,url,new RemoveComplete());
     }
 
     private class RemoveComplete implements CallbackWithResponse{
@@ -74,5 +78,11 @@ public class BusDetailsActivity extends AppCompatActivity {
 
     public void OnClick_Done(View view){
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }
