@@ -1,6 +1,7 @@
 package dev.kevin.app.schoolbustrackerclient;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,31 +15,96 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.Style;
 
 import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 import dev.kevin.app.schoolbustrackerclient.libs.ApiManager;
 import dev.kevin.app.schoolbustrackerclient.libs.AppConstants;
 import dev.kevin.app.schoolbustrackerclient.libs.Callback;
 import dev.kevin.app.schoolbustrackerclient.libs.CallbackWithResponse;
+import dev.kevin.app.schoolbustrackerclient.libs.Session;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity  extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
-    private LocationManager mLocationManager;
+    MapView mapView;
+    MapboxMap map;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
+    protected LocationManager mLocationManager;
 
-    private static final long MIN_TIME_BW_UPDATES = 1;
+    protected static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
+
+    protected static final long MIN_TIME_BW_UPDATES = 1;
+
+    private Marker marker;
+
+    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mapbox.getInstance(this,AppConstants.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_main);
 
+        session = new Session(this);
+
+
+
+//        String qrcode = session.get("qrcode",null);
+//
+//        if(qrcode == null){
+//            Intent intent = new Intent(this,ScanQRActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }else{
+//
+//        }
+
+        mapView = findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+
+        beginGettingLocation();
+
+    }
+
+    @Override
+    public void onMapReady(@NonNull MapboxMap mapboxMap) {
+        map = mapboxMap;
+        mapboxMap.setStyle(Style.MAPBOX_STREETS);
+
+        refreshMapCamera();
+    }
+
+    private void refreshMapCamera(){
+        if(map == null){
+            return;
+        }
+        CameraPosition position = new CameraPosition.Builder()
+                .target(new LatLng(14.584468, 121.045721))
+                .zoom(11)
+                .tilt(20)
+                .build();
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(position),5000);
+    }
+
+    public void beginGettingLocation(){
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
             return;
         }
@@ -46,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
     }
 
-    private void askForPermission(String permission, Integer requestCode) {
+    public void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
@@ -76,20 +142,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+
     @Override
     public void onLocationChanged(final Location location) {
-        TextView textView = findViewById(R.id.txt1);
-        textView.setText(location.getLatitude() + " , " + location.getLongitude());
 
-        String strLat = location.getLatitude()+"".replace("\\.","+");
-        String strLng = location.getLongitude()+"".replace("\\.","+");
+//        displayMarkerOnMap(location);
 
-        String url = AppConstants.DOMAIN+"move2/1/"+strLat+"/"+strLng;
+//        String qrcode = session.get("qrcode",null);
+//        String[] parts = qrcode.split("\\-");
+//        String bus_no = parts[0];
+
+        String bus_no = "1";
+
+        String url = AppConstants.DOMAIN+"move/"+bus_no+"/"+location.getLatitude()+"/"+location.getLongitude();
 
         ApiManager.execute(this, url, Request.Method.GET, null, new CallbackWithResponse() {
             @Override
             public void execute(JSONObject response) {
-                Toast.makeText(MainActivity.this, "Moved", Toast.LENGTH_SHORT).show();
+
             }
         }, new Callback() {
             @Override
@@ -113,4 +183,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onProviderDisabled(String provider) {
 
     }
+
+//    private void displayMarkerOnMap(final Location location) {
+//        if(map == null){
+//            return;
+//        }
+//        if(marker == null){
+//            map.addMarker(new MarkerOptions().setTitle("Your Location").setPosition(new LatLng(location.getLatitude(),location.getLongitude())));
+//            ArrayList<Marker> markers = (ArrayList<Marker>) map.getMarkers();
+//            marker = markers.get(0);
+//        }else{
+//            marker.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
+//        }
+//    }
 }

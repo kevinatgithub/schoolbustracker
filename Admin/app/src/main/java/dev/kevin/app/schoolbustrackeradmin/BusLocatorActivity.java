@@ -37,7 +37,7 @@ import dev.kevin.app.schoolbustrackeradmin.models.MapMarkerOptions;
 public class BusLocatorActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     MapView mapView;
-    Icon icon, icon2;
+    Icon icon;
     ProgressBar progressBarLoading;
     ArrayList<Bus> buses = new ArrayList<>();
     Gson gson = new Gson();
@@ -55,7 +55,6 @@ public class BusLocatorActivity extends AppCompatActivity implements OnMapReadyC
 
         IconFactory iconFactory = IconFactory.getInstance(this);
         icon = iconFactory.fromResource(R.drawable.ic_school_bus);
-        icon2 = iconFactory.fromResource(R.drawable.ic_plus_w);
 
         FloatingActionButton fab = findViewById(R.id.fab_btn);
         fab.setOnClickListener(new View.OnClickListener() {
