@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -41,6 +43,7 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
     MapView mapView;
     MapboxMap map;
+    Icon icon;
 
     protected LocationManager mLocationManager;
 
@@ -60,42 +63,43 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
         session = new Session(this);
 
+        IconFactory iconFactory = IconFactory.getInstance(this);
+        icon = iconFactory.fromResource(R.drawable.schoolbus);
 
+        String qrcode = session.get("qrcode",null);
 
-//        String qrcode = session.get("qrcode",null);
-//
-//        if(qrcode == null){
-//            Intent intent = new Intent(this,ScanQRActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }else{
-//
-//        }
+        if(qrcode == null){
+            Intent intent = new Intent(this,ScanQRActivity.class);
+            startActivity(intent);
+            finish();
+        }else{
 
-        mapView = findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+            mapView = findViewById(R.id.mapView);
+            mapView.onCreate(savedInstanceState);
+            mapView.getMapAsync(this);
 
-        beginGettingLocation();
+            beginGettingLocation();
+        }
+
 
     }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        mapboxMap.setStyle(Style.MAPBOX_STREETS);
+        mapboxMap.setStyle(Style.TRAFFIC_DAY);
 
-        refreshMapCamera();
+        refreshMapCamera(14.591608,120.977527);
     }
 
-    private void refreshMapCamera(){
+    private void refreshMapCamera(double latitude, double longtitude){
         if(map == null){
             return;
         }
         CameraPosition position = new CameraPosition.Builder()
-                .target(new LatLng(14.584468, 121.045721))
-                .zoom(11)
-                .tilt(20)
+                .target(new LatLng(latitude, longtitude))
+                .zoom(16)
+//                .tilt(20)
                 .build();
 
         map.animateCamera(CameraUpdateFactory.newCameraPosition(position),5000);
@@ -104,12 +108,11 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
     public void beginGettingLocation(){
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             askForPermission(Manifest.permission.ACCESS_FINE_LOCATION,0);
             return;
         }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
     }
 
     public void askForPermission(String permission, Integer requestCode) {
@@ -146,20 +149,18 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
     @Override
     public void onLocationChanged(final Location location) {
 
-//        displayMarkerOnMap(location);
+        refreshMapCamera(location.getLatitude(),location.getLongitude());
+        displayMarkerOnMap(location);
 
-//        String qrcode = session.get("qrcode",null);
-//        String[] parts = qrcode.split("\\-");
-//        String bus_no = parts[0];
-
-        String bus_no = "1";
+        String qrcode = session.get("qrcode",null);
+        String[] parts = qrcode.split("\\-");
+        String bus_no = parts[0];
 
         String url = AppConstants.DOMAIN+"move/"+bus_no+"/"+location.getLatitude()+"/"+location.getLongitude();
 
         ApiManager.execute(this, url, Request.Method.GET, null, new CallbackWithResponse() {
             @Override
             public void execute(JSONObject response) {
-
             }
         }, new Callback() {
             @Override
@@ -184,16 +185,16 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
     }
 
-//    private void displayMarkerOnMap(final Location location) {
-//        if(map == null){
-//            return;
-//        }
-//        if(marker == null){
-//            map.addMarker(new MarkerOptions().setTitle("Your Location").setPosition(new LatLng(location.getLatitude(),location.getLongitude())));
-//            ArrayList<Marker> markers = (ArrayList<Marker>) map.getMarkers();
-//            marker = markers.get(0);
-//        }else{
-//            marker.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
-//        }
-//    }
+    private void displayMarkerOnMap(final Location location) {
+        if(map == null){
+            return;
+        }
+        if(marker == null){
+            map.addMarker(new MarkerOptions().setTitle("Your Location").setPosition(new LatLng(location.getLatitude(),location.getLongitude()))).setIcon(icon);
+            ArrayList<Marker> markers = (ArrayList<Marker>) map.getMarkers();
+            marker = markers.get(0);
+        }else{
+            marker.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
+        }
+    }
 }

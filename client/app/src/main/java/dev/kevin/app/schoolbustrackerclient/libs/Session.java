@@ -9,14 +9,15 @@ import com.google.gson.Gson;
 public class Session {
 
     private SharedPreferences prefs;
-    private Gson gson = new Gson();
+    private Gson gson;
 
     public Session(Context context) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        gson = new Gson();
     }
 
     public void set(String key, String value){
-        prefs.edit().putString(key,value);
+        prefs.edit().putString(key,value).commit();
     }
 
     public String get(String key, String defValue){

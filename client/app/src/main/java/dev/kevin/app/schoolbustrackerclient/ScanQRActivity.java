@@ -1,13 +1,13 @@
 package dev.kevin.app.schoolbustrackerclient;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,7 +24,7 @@ import dev.kevin.app.schoolbustrackerclient.libs.Session;
 
 import static com.google.android.gms.vision.CameraSource.CAMERA_FACING_BACK;
 
-public class ScanQRActivity extends AppCompatActivity {
+public class ScanQRActivity extends Activity {
 
     SurfaceView cameraPreview;
     TextView txtPreview;
@@ -89,18 +89,22 @@ public class ScanQRActivity extends AppCompatActivity {
                     txtPreview.post(new Runnable() {
                         @Override
                         public void run() {
-                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
-                            vibrator.vibrate(100);
                             cameraSource.release();
-                            session.set("qrcode",qrcodes.valueAt(0).displayValue);
-                            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            assignQRtoSession(qrcodes.valueAt(0).displayValue);
                         }
                     });
                 }
             }
         });
+//
+//        // TODO: 26/03/2019 Remove in production
+//        Toast.makeText(this, "Assigning Bus no 1 in 3 seconds", Toast.LENGTH_SHORT).show();
+//        new android.os.Handler().postDelayed(
+//        new Runnable() {
+//            public void run() {
+//                assignQRtoSession("1-Juan Dela Cruz");
+//            }
+//        },3000);
     }
 
     @Override
@@ -120,5 +124,14 @@ public class ScanQRActivity extends AppCompatActivity {
             }
             break;
         }
+    }
+
+    protected void assignQRtoSession(String qrcode){
+        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
+        vibrator.vibrate(100);
+        session.set("qrcode",qrcode);
+        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
