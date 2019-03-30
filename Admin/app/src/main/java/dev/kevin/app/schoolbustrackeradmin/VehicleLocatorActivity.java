@@ -5,16 +5,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -30,25 +26,30 @@ import java.util.ArrayList;
 import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
-import dev.kevin.app.schoolbustrackeradmin.models.APIResponse_Buses;
-import dev.kevin.app.schoolbustrackeradmin.models.Bus;
+import dev.kevin.app.schoolbustrackeradmin.libs.Session;
+import dev.kevin.app.schoolbustrackeradmin.models.ApiResponse;
 import dev.kevin.app.schoolbustrackeradmin.models.MapMarkerOptions;
+import dev.kevin.app.schoolbustrackeradmin.models.School;
+import dev.kevin.app.schoolbustrackeradmin.models.User;
+import dev.kevin.app.schoolbustrackeradmin.models.Vehicle;
 
-public class BusLocatorActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class VehicleLocatorActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     MapView mapView;
     Icon icon;
-    ProgressBar progressBarLoading;
-    ArrayList<Bus> buses = new ArrayList<>();
+    ArrayList<Vehicle> vehicles = new ArrayList<>();
     Gson gson = new Gson();
+    User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this,AppConstants.MAPBOX_ACCESS_TOKEN);
-        setContentView(R.layout.activity_bus_locator);
+        setContentView(R.layout.activity_vehicle_locator);
 
-        progressBarLoading = findViewById(R.id.progressBarLoading);
+        String strUser = Session.get(this,"user",null);
+        user = gson.fromJson(strUser,User.class);
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -70,45 +71,44 @@ public class BusLocatorActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        mapboxMap.setStyle(Style.MAPBOX_STREETS);
-
-        refreshMapCamera();
+        mapboxMap.setStyle(Style.TRAFFIC_DAY);
+        School school = user.getSchool();
+        refreshMapCamera(Double.parseDouble(school.getLat()), Double.parseDouble(school.getLng()));
 
         fetchBusesCoordinates();
     }
 
     private void fetchBusesCoordinates() {
-        String url = AppConstants.DOMAIN + "buses";
-        ApiManager.execute(this,url,new BusesLoaded());
-
-
+        String url = AppConstants.DOMAIN + "vehicles/"+user.getSchool_id();
+        ApiManager.execute(this,url,new VehiclesLoaded());
     }
 
     ArrayList<MapMarkerOptions> markers = new ArrayList<>();
 
-    private class BusesLoaded implements CallbackWithResponse{
+    private class VehiclesLoaded implements CallbackWithResponse{
 
         @Override
         public void execute(JSONObject response) {
-            APIResponse_Buses apiResponse_buses = gson.fromJson(response.toString(),APIResponse_Buses.class);
-            buses = apiResponse_buses.getBuses();
-            for(Bus bus: buses){
+            ApiResponse apiResponse = gson.fromJson(response.toString(),ApiResponse.class);
+            vehicles = apiResponse.getVehicles();
+
+            for(Vehicle vehicle: vehicles){
                 MapMarkerOptions opt = null;
                 int i = 0;
                 for(MapMarkerOptions marker: markers){
-                    if(marker.getBus().getBus_no().equals(bus.getBus_no())){
+                    if(marker.getVehicle().getPlate_no().equals(vehicle.getPlate_no())){
                         opt = marker;
                         if(map.getMarkers().size() > i){
                             Marker m = map.getMarkers().get(i);
-                            m.setPosition(new LatLng(bus.getLat(),bus.getLng()));
-                            m.setTitle(bus.getBus_no() + " - " +bus.getDriver());
+                            m.setPosition(new LatLng(vehicle.getLat(),vehicle.getLng()));
+                            m.setTitle(vehicle.getPlate_no() + " - " +vehicle.getDriver());
                         }
                     }
                     i++;
                 }
 
                 if(opt == null){
-                    opt = new MapMarkerOptions(bus);
+                    opt = new MapMarkerOptions(vehicle);
                     opt.getMarkerOptions().setIcon(icon);
                     markers.add(opt);
                     map.addMarker(opt.getMarkerOptions());
@@ -120,17 +120,17 @@ public class BusLocatorActivity extends AppCompatActivity implements OnMapReadyC
                         public void run() {
                             fetchBusesCoordinates();
                         }
-                    },5000);
+                    },10000);
         }
     }
 
-    private void refreshMapCamera(){
+    private void refreshMapCamera(double latitude, double longtitude){
         if(map == null){
             return;
         }
         CameraPosition position = new CameraPosition.Builder()
-                .target(new LatLng(14.584468, 121.045721))
-                .zoom(11)
+                .target(new LatLng(latitude, longtitude))
+                .zoom(16)
                 .tilt(20)
                 .build();
 

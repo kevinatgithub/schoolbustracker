@@ -1,3 +1,182 @@
 mihemobos@networkapps.info 	yuiope123	-bobong
 
 fimizame@businesssource.net	12345678	-track3r
+
+/**
+ * My API Sandbox
+ * 
+ */
+ 
+/**Login End Point**/
+Sandbox.define('/login/{user_id}/{password}','get',function(req,res){
+    state.users = state.users || [];
+    var user = _.find(state.users, {user_id : req.params.user_id.trim(), password : req.params.password.trim()});
+    if(!user){
+        res.json({status : 'failed'});
+    }else{
+        res.json({status : 'ok', user : user});
+    }
+});
+ 
+/**User End Points**/
+// School Admin Registration
+Sandbox.define('/register/admin/{school_id}/{user_id}/{password}/{name}','get',function(req,res){
+    state.users = state.users || [];
+    var existing = _.find(state.users,{user_id : req.params.user_id.trim()});
+    if(existing){
+        res.json({status : 'failed', message : 'User ID already exists'});
+        return;
+    }
+    var user = {
+        user_id : req.params.user_id.trim(),
+        school_id : req.params.school_id * 1,
+        password : req.params.password,
+        name : req.params.name
+    };
+    
+    // res.json(user);
+    state.users.push(user);
+    res.json({status : 'success'});
+});
+
+Sandbox.define('/admins/{school_id}','get',function(req, res){
+    state.users = state.users || [];
+    
+    var users = _.filter(state.users, {
+        school_id: req.params.school_id*1
+    });
+    
+    res.json({
+        'users': users
+    });
+});
+
+/**School End Points**/ 
+//for schools drop down
+ Sandbox.define('/schools','get',function(req,res){
+     state.schools = state.schools || [];
+     var schools = [];
+     state.schools.forEach(function(s){
+         schools.push({id : s.id, name : s.name, geo : s.geo});
+     });
+     res.json({schools : schools});
+ });
+ 
+ 
+ //new school
+ Sandbox.define('/school/{name}/{lat}/{lng}','get',function(req,res){
+     state.schools = state.schools || [];
+     var school = {
+         id : state.schools.length,
+         name : req.params.name,
+         geo : {
+             lat : req.params.lat,
+             lng : req.params.lng
+         },
+         vehicles : []
+     };
+     state.schools.push(school);
+     res.json({school : school});
+ });
+ 
+ 
+ //update school
+ Sandbox.define('/schoolupdate/{id}/{name}/{address}/{lat}/{lng}','get',function(req,res){
+     state.schools = state.schools || [];
+     
+     var p = req.params;
+     
+     var school = _.find(state.schools,{id : p.id});
+     school.name = p.name;
+     school.address = p.address;
+     school.lat = p.lat;
+     school.lng = p.lng;
+     
+     res.send("ok");
+ });
+ 
+
+/**Vehicles End Points**/
+// Vehicle List
+Sandbox.define('/vehicles/{school_id}','get',function(req,res){
+    state.schools = state.schools || [];
+    var school = _.find(state.schools,{id : req.params.school_id * 1});
+    if(school){
+        res.json({
+            vehicles : school.vehicles
+        });    
+    }else{
+        res.json({vehicles : []});
+    }
+    
+});
+
+//new vehicle
+Sandbox.define('/vehicle/{school_id}/{plate_no}/{model}/{driver}/{contact_no}','get',function(req,res){
+     state.schools = state.schools || [];
+     var p = req.params;
+     var school = _.find(state.schools,{id : p.school_id*1});
+     var vehicle = {
+         id : school.vehicles.length,
+         plate_no : req.params.plate_no,
+         model : req.params.model,
+         driver: req.params.driver,
+         contact_no : req.params.contact_no,
+         lat : 0,
+         lng : 0,
+         status : null,
+         reassign : null
+     };
+     school.vehicles.push(vehicle);
+     res.json({vehicle : vehicle});
+ });
+ 
+ //change vehicle status
+ Sandbox.define('/vehiclestatus/{school_id}/{id}/{status}','get',function(req,res){
+     var vehicle = findVehicle(req.params.school_id,req.params.id);
+     vehicle.status = req.params.status;
+     res.send('ok');
+ });
+ 
+ //relieve vehicle
+ Sandbox.define('/vehiclereassign/{school_id}/{id}/{vehicle_id}','get',function(req,res){
+     var vehicle = findVehicle(req.params.school_id,req.params.id);
+     vehicle.status = "relieved";
+     vehicle.reassign = req.params.vehicle_id;
+     res.send('ok');
+ });
+ 
+ //change vehicle location (request traffic)
+ Sandbox.define('/vehiclelocation/{school_id}/{id}/{lat}/{lng}','get',function(req,res){
+     var vehicle = findVehicle(req.params.school_id,req.params.id);
+     vehicle.lat = req.params.lat;
+     vehicle.lng = req.params.lng;
+     res.send('ok');
+ });
+
+//get vehicle details
+ Sandbox.define('/vehicle/{school_id}/{id}','get',function(req,res){
+     state.schools = state.schools || [];
+     var vehicle = findVehicle(school_id,id);
+     res.json({vehicle : vehicle});
+ });
+ 
+//  Remove Vehicle Details
+Sandbox.define('/vehicledelete/{school_id}/{id}','get',function(req,res){
+    var school = _.find(state.schools,{id : req.params.school_id * 1});
+    var nVehicles = [];
+    school.vehicles.forEach(function(v){
+        if(v.id != req.params.id*1){
+            nVehicles.push(v);
+        } 
+    });
+    school.vehicles = nVehicles;
+    res.send('ok');
+});
+ 
+ 
+ //helper function to get vehicle object
+ function findVehicle(school_id,id){
+     var school = _.find(state.schools,{id:school_id});
+     return vehicle = _.find(school.vehicles,{id:id});
+ }

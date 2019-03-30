@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BusDetailsActivity">
+    tools:context=".VehicleDetailsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout5"
@@ -15,7 +15,7 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Bus Details"
+            app:title="Vehicle Details"
             app:titleTextColor="#ffffff"
             app:navigationIcon="@drawable/ic_arrow_left_w"/>
     </android.support.design.widget.AppBarLayout>
@@ -39,14 +39,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:text="Bus No."
+        android:text="Plate No."
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgQr" />
 
     <TextView
-        android:id="@+id/txtBusNo"
+        android:id="@+id/txtPlateNo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -69,7 +69,7 @@
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtBusNo" />
+        app:layout_constraintTop_toBottomOf="@+id/txtPlateNo" />
 
     <TextView
         android:id="@+id/txtDriver"
@@ -103,7 +103,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/colorPrimaryDark"
             android:text="Remove Bus"
-            android:onClick="OnClick_RemoveBus"/>
+            android:onClick="OnClick_RemoveVehicle"/>
 
         <android.support.design.button.MaterialButton
             android:id="@+id/button2"

@@ -7,30 +7,18 @@
     android:background="@drawable/background"
     tools:context=".MainActivity">
 
-    <!--<android.support.design.widget.AppBarLayout-->
-        <!--android:id="@+id/appBarLayout5"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
-
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/app_bar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?attr/actionBarSize"-->
-            <!--app:title="School Bus Tracker"-->
-            <!--app:titleTextColor="#ffffff" />-->
-    <!--</android.support.design.widget.AppBarLayout>-->
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="80dp"
-        android:layout_marginEnd="8dp"
+        android:background="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/schoolbustracker" />
+        app:srcCompat="@drawable/tracker" />
 
     <android.support.design.button.MaterialButton
         android:id="@+id/btnBuses"
@@ -58,5 +46,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnBuses" />
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/btnSignOut"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="SIGN OUT"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnTracker" />
 
 </android.support.constraint.ConstraintLayout>

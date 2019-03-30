@@ -23,7 +23,7 @@ public class Session {
 
     public static void set(Context context, String key, String value){
         init(context);
-        prefs.edit().putString(key,value);
+        prefs.edit().putString(key,value).commit();
     }
 
     public static String get(Context context,String key, String defValue){

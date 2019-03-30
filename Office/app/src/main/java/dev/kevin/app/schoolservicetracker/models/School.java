@@ -4,14 +4,12 @@ public class School {
 
     private int id;
     private String name;
-    private String lat;
-    private String lng;
+    private Geo geo;
 
-    public School(int id, String name, String lat, String lng) {
+    public School(int id, String name, Geo geo) {
         this.id = id;
         this.name = name;
-        this.lat = lat;
-        this.lng = lng;
+        this.geo = geo;
     }
 
     public int getId() {
@@ -30,19 +28,39 @@ public class School {
         this.name = name;
     }
 
-    public String getLat() {
-        return lat;
+    public Geo getGeo() {
+        return geo;
     }
 
-    public void setLat(String lat) {
-        this.lat = lat;
+    public void setGeo(Geo geo) {
+        this.geo = geo;
     }
 
-    public String getLng() {
-        return lng;
+    public class Geo{
+        private String lat;
+        private String lng;
+
+        public Geo(String lat, String lng) {
+            this.lat = lat;
+            this.lng = lng;
+        }
+
+        public String getLat() {
+            return lat;
+        }
+
+        public void setLat(String lat) {
+            this.lat = lat;
+        }
+
+        public String getLng() {
+            return lng;
+        }
+
+        public void setLng(String lng) {
+            this.lng = lng;
+        }
     }
 
-    public void setLng(String lng) {
-        this.lng = lng;
-    }
+
 }

@@ -5,52 +5,52 @@ import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
+import com.google.gson.Gson;
 import com.google.zxing.WriterException;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
+import dev.kevin.app.schoolbustrackeradmin.models.Vehicle;
 
-public class BusDetailsActivity extends AppCompatActivity {
+public class VehicleDetailsActivity extends AppCompatActivity {
 
-    String bus_no;
-    String driver;
+    Gson gson = new Gson();
+    Vehicle vehicle;
+    String school_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bus_details);
+        setContentView(R.layout.activity_vehicle_details);
 
         Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        bus_no = intent.getStringExtra("bus_no");
-        driver = intent.getStringExtra("driver");
+        String strVehicle = intent.getStringExtra("vehicle");
+        vehicle = gson.fromJson(strVehicle,Vehicle.class);
 
-        TextView txtBusNo = findViewById(R.id.txtBusNo);
+        TextView txtBusNo = findViewById(R.id.txtPlateNo);
         TextView txtDriver = findViewById(R.id.txtDriver);
 
-        txtBusNo.setText(bus_no);
-        txtDriver.setText(driver);
+        txtBusNo.setText(vehicle.getPlate_no());
+        txtDriver.setText(vehicle.getDriver());
 
         ImageView imgQr = findViewById(R.id.imgQr);
         Bitmap bitmap;
 
-        QRGEncoder qrgEncoder = new QRGEncoder(bus_no + "-" + driver, null, QRGContents.Type.TEXT, 200);
+        QRGEncoder qrgEncoder = new QRGEncoder(vehicle.getPlate_no(), null, QRGContents.Type.TEXT, 200);
 
         try {
             // Getting QR-Code as Bitmap
@@ -62,8 +62,10 @@ public class BusDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void OnClick_RemoveBus(View view){
-        String url = AppConstants.DOMAIN + "removebus/"+bus_no;
+    public void OnClick_RemoveVehicle(View view){
+        String url = AppConstants.DOMAIN + "vehicledelete/{school_id}/{id}";
+        url = url.replace("{school_id}",school_id);
+        url = url.replace("{id}",vehicle.getId()+"");
         ApiManager.execute(this,url,new RemoveComplete());
     }
 
@@ -71,7 +73,7 @@ public class BusDetailsActivity extends AppCompatActivity {
 
         @Override
         public void execute(JSONObject response) {
-            Toast.makeText(BusDetailsActivity.this, "Bus has been removed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(VehicleDetailsActivity.this, "Vehicle has been removed", Toast.LENGTH_SHORT).show();
             finish();
         }
     }

@@ -4,23 +4,23 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 public class MapMarkerOptions{
-    private Bus bus;
+    private Vehicle vehicle;
     private MarkerOptions markerOptions;
 
-    public MapMarkerOptions(Bus bus) {
-        this.bus = bus;
+    public MapMarkerOptions(Vehicle vehicle) {
+        this.vehicle = vehicle;
         markerOptions = new MarkerOptions()
-                .position(new LatLng(bus.getLat(),bus.getLng()))
-                .setTitle(bus.getBus_no() + " - " + bus.getDriver());
+                .position(new LatLng(vehicle.getLat(),vehicle.getLng()))
+                .setTitle(vehicle.getPlate_no() + " - " + vehicle.getDriver());
     }
 
-    public void setBus(Bus bus) {
-        this.bus = bus;
-        markerOptions.setPosition(new LatLng(bus.getLat(),bus.getLng()));
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+        markerOptions.setPosition(new LatLng(vehicle.getLat(),vehicle.getLng()));
     }
 
-    public Bus getBus() {
-        return bus;
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
     public MarkerOptions getMarkerOptions() {
