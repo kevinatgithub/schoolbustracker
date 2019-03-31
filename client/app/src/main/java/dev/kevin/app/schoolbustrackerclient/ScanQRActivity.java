@@ -96,15 +96,6 @@ public class ScanQRActivity extends Activity {
                 }
             }
         });
-//
-//        // TODO: 26/03/2019 Remove in production
-//        Toast.makeText(this, "Assigning Bus no 1 in 3 seconds", Toast.LENGTH_SHORT).show();
-//        new android.os.Handler().postDelayed(
-//        new Runnable() {
-//            public void run() {
-//                assignQRtoSession("1-Juan Dela Cruz");
-//            }
-//        },3000);
     }
 
     @Override

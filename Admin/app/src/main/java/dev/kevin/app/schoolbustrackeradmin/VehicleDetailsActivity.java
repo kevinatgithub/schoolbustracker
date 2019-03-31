@@ -21,6 +21,8 @@ import androidmads.library.qrgenearator.QRGEncoder;
 import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
+import dev.kevin.app.schoolbustrackeradmin.libs.Session;
+import dev.kevin.app.schoolbustrackeradmin.models.User;
 import dev.kevin.app.schoolbustrackeradmin.models.Vehicle;
 
 public class VehicleDetailsActivity extends AppCompatActivity {
@@ -50,7 +52,10 @@ public class VehicleDetailsActivity extends AppCompatActivity {
         ImageView imgQr = findViewById(R.id.imgQr);
         Bitmap bitmap;
 
-        QRGEncoder qrgEncoder = new QRGEncoder(vehicle.getPlate_no(), null, QRGContents.Type.TEXT, 200);
+        User user = gson.fromJson(Session.get(this,"user",null),User.class);
+        String school_id = user.getSchool_id()+"";
+
+        QRGEncoder qrgEncoder = new QRGEncoder(school_id+"-" +vehicle.getPlate_no(), null, QRGContents.Type.TEXT, 200);
 
         try {
             // Getting QR-Code as Bitmap

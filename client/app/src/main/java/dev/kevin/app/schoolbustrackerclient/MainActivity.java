@@ -154,9 +154,10 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
         String qrcode = session.get("qrcode",null);
         String[] parts = qrcode.split("\\-");
-        String bus_no = parts[0];
+        String school_id = parts[0];
+        String plate_no = parts[1];
 
-        String url = AppConstants.DOMAIN+"move/"+bus_no+"/"+location.getLatitude()+"/"+location.getLongitude();
+        String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+plate_no+"/"+location.getLatitude()+"/"+location.getLongitude();
 
         ApiManager.execute(this, url, Request.Method.GET, null, new CallbackWithResponse() {
             @Override
