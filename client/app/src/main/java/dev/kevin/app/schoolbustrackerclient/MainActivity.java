@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -38,6 +39,7 @@ import dev.kevin.app.schoolbustrackerclient.libs.AppConstants;
 import dev.kevin.app.schoolbustrackerclient.libs.Callback;
 import dev.kevin.app.schoolbustrackerclient.libs.CallbackWithResponse;
 import dev.kevin.app.schoolbustrackerclient.libs.Session;
+import dev.kevin.app.schoolbustrackerclient.model.Vehicle;
 
 public class MainActivity  extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
@@ -49,11 +51,13 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
     protected static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
 
-    protected static final long MIN_TIME_BW_UPDATES = 1;
+    protected static final long MIN_TIME_BW_UPDATES = 5;
 
     private Marker marker;
 
-    Session session;
+    Gson gson = new Gson();
+    Vehicle vehicle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,25 +65,27 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         Mapbox.getInstance(this,AppConstants.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_main);
 
-        session = new Session(this);
 
         IconFactory iconFactory = IconFactory.getInstance(this);
         icon = iconFactory.fromResource(R.drawable.schoolbus);
 
-        String qrcode = session.get("qrcode",null);
+        String qrcode = Session.get(this,"qrcode",null);
 
         if(qrcode == null){
-            Intent intent = new Intent(this,ScanQRActivity.class);
+            Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
             finish();
-        }else{
-
-            mapView = findViewById(R.id.mapView);
-            mapView.onCreate(savedInstanceState);
-            mapView.getMapAsync(this);
-
-            beginGettingLocation();
         }
+
+        mapView = findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+
+        Intent intent = getIntent();
+        String strVehicle = intent.getStringExtra("vehicle");
+        vehicle = gson.fromJson(strVehicle,Vehicle.class);
+
+        beginGettingLocation();
 
 
     }
@@ -89,7 +95,11 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         map = mapboxMap;
         mapboxMap.setStyle(Style.TRAFFIC_DAY);
 
-        refreshMapCamera(14.591608,120.977527);
+        if(vehicle == null){
+            refreshMapCamera(14.591608,120.977527);
+        }else{
+            refreshMapCamera(vehicle.getLat(),vehicle.getLng());
+        }
     }
 
     private void refreshMapCamera(double latitude, double longtitude){
@@ -145,28 +155,28 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         }
     }
 
-
     @Override
     public void onLocationChanged(final Location location) {
 
         refreshMapCamera(location.getLatitude(),location.getLongitude());
         displayMarkerOnMap(location);
 
-        String qrcode = session.get("qrcode",null);
+//        Toast.makeText(this, location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        reportDeviceLocation(location);
+    }
+
+    private void reportDeviceLocation(Location location) {
+        String qrcode = Session.get(this,"qrcode",null);
         String[] parts = qrcode.split("\\-");
         String school_id = parts[0];
         String plate_no = parts[1];
 
-        String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+plate_no+"/"+location.getLatitude()+"/"+location.getLongitude();
+        String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+vehicle.getId()+"/"+location.getLatitude()+"/"+location.getLongitude();
 
-        ApiManager.execute(this, url, Request.Method.GET, null, new CallbackWithResponse() {
+        ApiManager.execute(this, url, new CallbackWithResponse() {
             @Override
             public void execute(JSONObject response) {
-            }
-        }, new Callback() {
-            @Override
-            public void execute() {
-                Toast.makeText(MainActivity.this, "Error in Api Access", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

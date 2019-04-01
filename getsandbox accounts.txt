@@ -161,7 +161,7 @@ Sandbox.define('/vehicle/{school_id}/{plate_no}/{model}/{driver}/{contact_no}','
 //get vehicle details
  Sandbox.define('/vehicle/{school_id}/{id}','get',function(req,res){
      state.schools = state.schools || [];
-     var vehicle = findVehicle(school_id,id);
+     var vehicle = findVehicle(req.params.school_id,req.params.id);
      res.json({vehicle : vehicle});
  });
  
@@ -181,6 +181,6 @@ Sandbox.define('/vehicledelete/{school_id}/{id}','get',function(req,res){
  
  //helper function to get vehicle object
  function findVehicle(school_id,id){
-     var school = _.find(state.schools,{id:school_id});
-     return vehicle = _.find(school.vehicles,{id:id});
+     var school = _.find(state.schools,{id:school_id *1});
+     return vehicle = _.find(school.vehicles,{id:id*1});
  }

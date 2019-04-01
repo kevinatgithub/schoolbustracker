@@ -1,11 +1,10 @@
 package dev.kevin.app.schoolbustrackeradmin;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;

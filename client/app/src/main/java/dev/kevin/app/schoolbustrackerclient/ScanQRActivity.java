@@ -31,14 +31,11 @@ public class ScanQRActivity extends Activity {
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
     final int RequestCameraPermissionID = 1001;
-    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_qr);
-
-        session = new Session(this);
 
         cameraPreview = findViewById(R.id.cameraPreview);
         txtPreview = findViewById(R.id.txtResult);
@@ -120,8 +117,8 @@ public class ScanQRActivity extends Activity {
     protected void assignQRtoSession(String qrcode){
         Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
         vibrator.vibrate(100);
-        session.set("qrcode",qrcode);
-        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        Session.set(this,"qrcode",qrcode);
+        Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
         startActivity(intent);
         finish();
     }

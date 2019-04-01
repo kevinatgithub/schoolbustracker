@@ -8,19 +8,25 @@ import com.google.gson.Gson;
 
 public class Session {
 
-    private SharedPreferences prefs;
-    private Gson gson;
+    private static SharedPreferences prefs;
+    private static Gson gson;
 
-    public Session(Context context) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        gson = new Gson();
+    private static void init(Context context){
+        if(prefs == null){
+            prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        }
+        if(gson == null){
+            gson = new Gson();
+        }
     }
 
-    public void set(String key, String value){
+    public static void set(Context context, String key, String value){
+        init(context);
         prefs.edit().putString(key,value).commit();
     }
 
-    public String get(String key, String defValue){
+    public static String get(Context context, String key, String defValue){
+        init(context);
         String value = prefs.getString(key,"");
         if(value.equals("")){
             return defValue;
@@ -28,7 +34,8 @@ public class Session {
         return value;
     }
 
-    public void delete(String key){
+    public static void delete(Context context, String key){
+        init(context);
         prefs.edit().remove(key).commit();
     }
 
