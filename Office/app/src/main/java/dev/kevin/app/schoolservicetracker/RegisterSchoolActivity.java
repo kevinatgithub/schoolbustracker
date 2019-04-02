@@ -34,7 +34,7 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
     MapboxMap map;
     LatLng latLng;
     EditText txtSchool;
-    Button btnRegister;
+    Button btnRegister,btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,13 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
         btnRegister = findViewById(R.id.btnRegister);
         btnRegister.setEnabled(false);
         btnRegister.setOnClickListener(this);
+        btnCancel = findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -66,7 +73,7 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
         }
         CameraPosition position = new CameraPosition.Builder()
                 .target(new LatLng(lat, lng))
-                .zoom(11)
+                .zoom(16)
                 .build();
 
         map.animateCamera(CameraUpdateFactory.newCameraPosition(position),5000);

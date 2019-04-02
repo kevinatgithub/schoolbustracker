@@ -75,7 +75,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="8dp"
-        android:text="ABC1234"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -96,7 +95,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="12dp"
-        android:text="Toyota Inova"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblPlateNumber" />
@@ -117,7 +115,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
         android:layout_marginTop="20dp"
-        android:text="Juan Dela Cruz"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblModel" />
@@ -138,9 +135,22 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
         android:layout_marginTop="20dp"
-        android:text="091234567891"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblDriver" />
+
+    <TextView
+        android:id="@+id/lblLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Please wait, loading.."
+        app:layout_constraintBottom_toTopOf="@+id/btnStartTracker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </android.support.constraint.ConstraintLayout>

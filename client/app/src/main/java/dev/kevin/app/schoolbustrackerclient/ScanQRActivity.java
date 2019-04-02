@@ -93,6 +93,8 @@ public class ScanQRActivity extends Activity {
                 }
             }
         });
+
+        assignQRtoSession("3-0");
     }
 
     @Override

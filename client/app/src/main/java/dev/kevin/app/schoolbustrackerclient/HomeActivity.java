@@ -19,7 +19,7 @@ import dev.kevin.app.schoolbustrackerclient.model.Vehicle;
 
 public class HomeActivity extends AppCompatActivity {
 
-    TextView lblPlateNumber, lblModel, lblDriver, lblContactNumber;
+    TextView lblPlateNumber, lblModel, lblDriver, lblContactNumber, lblLoading;
     Gson gson = new Gson();
     Vehicle vehicle;
 
@@ -40,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
             lblModel = findViewById(R.id.lblModel);
             lblDriver = findViewById(R.id.lblDriver);
             lblContactNumber = findViewById(R.id.lblContactNumber);
+            lblLoading = findViewById(R.id.lblLoading);
 
             loadVehicleDetails(qrcode);
 //        Toast.makeText(this, qrcode, Toast.LENGTH_SHORT).show();
@@ -81,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
                 lblModel.setText(vehicle.getModel());
                 lblDriver.setText(vehicle.getDriver());
                 lblContactNumber.setText(vehicle.getContact_no());
+                lblLoading.setVisibility(View.GONE);
             }
         });
     }

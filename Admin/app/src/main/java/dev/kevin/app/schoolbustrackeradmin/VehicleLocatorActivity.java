@@ -126,7 +126,7 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
                         public void run() {
                             fetchBusesCoordinates();
                         }
-                    },10000);
+                    },3000);
         }
     }
 
