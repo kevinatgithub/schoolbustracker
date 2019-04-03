@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.mapbox.api.directions.v5.MapboxDirections;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -109,6 +111,12 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         }
 
         refreshMapCamera(vehicle.getLat(),vehicle.getLng());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
     }
 
     private void refreshMapCamera(double latitude, double longtitude){
