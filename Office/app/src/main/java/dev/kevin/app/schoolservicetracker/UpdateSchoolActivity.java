@@ -1,53 +1,47 @@
 package dev.kevin.app.schoolservicetracker;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Icon;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.Style;
+import com.google.gson.Gson;
 
-import org.json.JSONObject;
+import dev.kevin.app.schoolservicetracker.models.School;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import dev.kevin.app.schoolservicetracker.libs.ApiManager;
-import dev.kevin.app.schoolservicetracker.libs.AppConstants;
-import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
-
-public class RegisterSchoolActivity extends AppCompatActivity implements View.OnClickListener{
+public class UpdateSchoolActivity extends AppCompatActivity implements View.OnClickListener{
 
     TextInputLayout tlSchool,tlLicenseNo,tlTelephoneNo;
     EditText txtSchool,txtLicenseNo,txtTelephoneNo;
     Button btnRegister,btnCancel;
+    Gson gson = new Gson();
+    School school;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_school);
 
+        Toolbar toolbar = findViewById(R.id.app_bar);
+        toolbar.setTitle("Update School Information");
+
+        Intent i = getIntent();
+        String strSchool = i.getStringExtra("schoolName");
+        school = gson.fromJson(strSchool,School.class);
+
         tlSchool = findViewById(R.id.tlSchool);
         tlLicenseNo = findViewById(R.id.tlLicenseNumber);
         tlTelephoneNo = findViewById(R.id.tlTelephoneNo);
         txtSchool = findViewById(R.id.txtSchool);
+        txtSchool.setText(school.getName());
         txtLicenseNo = findViewById(R.id.txtLicenseNo);
+        txtLicenseNo.setText(school.getLicense_no());
         txtTelephoneNo = findViewById(R.id.txtTelephoneNo);
+        txtTelephoneNo.setText(school.getTelephone_no());
         btnRegister = findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(this);
         btnCancel = findViewById(R.id.btnCancel);
@@ -81,11 +75,12 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        String school = txtSchool.getText().toString();
+        String name = txtSchool.getText().toString();
         String licenseNo = txtLicenseNo.getText().toString();
         String telephoneNo = txtTelephoneNo.getText().toString();
         Intent i = new Intent(this,SelectLocationActivity.class);
-        i.putExtra("schoolName",school);
+        i.putExtra("school",gson.toJson(school));
+        i.putExtra("schoolName",name);
         i.putExtra("license_no",licenseNo);
         i.putExtra("telephone_no",telephoneNo);
         startActivity(i);

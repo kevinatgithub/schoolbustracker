@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".PreviewSchoolActivity" />
         <activity android:name=".RegisterAdminActivity" />
+        <activity android:name=".UpdateSchoolActivity" />
         <activity android:name=".SelectLocationActivity"></activity>
     </application>
 

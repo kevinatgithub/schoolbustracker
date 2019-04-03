@@ -6,14 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -26,7 +27,9 @@ import java.util.ArrayList;
 
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
+import dev.kevin.app.schoolservicetracker.libs.Callback;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
+import dev.kevin.app.schoolservicetracker.libs.ConfirmDialogHelper;
 import dev.kevin.app.schoolservicetracker.models.School;
 import dev.kevin.app.schoolservicetracker.models.User;
 
@@ -37,8 +40,9 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
 
     MapView mapView;
     MapboxMap map;
-    TextView lblSchool;
+    TextView lblSchool,lblLicenseNo,lblTelephoneNo;
     ListView lvAdmins;
+    LinearLayout lvHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +59,15 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
         mapView.getMapAsync(this);
 
         lblSchool = findViewById(R.id.lblSchool);
-
         lblSchool.setText(school.getName());
+        lblLicenseNo = findViewById(R.id.lblLicenseNo);
+        lblLicenseNo.setText("License No. " +school.getLicense_no());
+        lblTelephoneNo = findViewById(R.id.lblTelephoneNo);
+        lblTelephoneNo.setText("Telephone No." +school.getTelephone_no());
 
         lvAdmins = findViewById(R.id.lvAdmins);
+
+        lvHint = findViewById(R.id.lvHint);
 
         findViewById(R.id.btnRegisterUser).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +75,39 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
                 Intent intent1  = new Intent(getApplicationContext(),RegisterAdminActivity.class);
                 intent1.putExtra("school_id",school.getId()+"");
                 startActivity(intent1);
+            }
+        });
+
+        findViewById(R.id.btnUpdateSchool).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),UpdateSchoolActivity.class);
+                i.putExtra("schoolName",gson.toJson(school));
+                startActivity(i);
+                finish();
+            }
+        });
+        
+        findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ConfirmDialogHelper.confirm(PreviewSchoolActivity.this, "Delete School", "Do you want to delete schoolName?", new Callback() {
+                    @Override
+                    public void execute() {
+                        deleteSchool();
+                    }
+                });
+            }
+        });
+    }
+
+    private void deleteSchool() {
+        String url = AppConstants.DOMAIN + "schooldelete/"+school.getId();
+        ApiManager.execute(this, url, new CallbackWithResponse() {
+            @Override
+            public void execute(JSONObject response) {
+                Toast.makeText(PreviewSchoolActivity.this, "School Information has been deleted", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
@@ -82,9 +124,16 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void execute(JSONObject response) {
                 ApiResponse apiResponse = gson.fromJson(response.toString(),ApiResponse.class);
+                if(apiResponse.getUsers().length == 0){
+                    lvHint.setVisibility(View.VISIBLE);
+                }else{
+                    lvHint.setVisibility(View.GONE);
+                }
                 ArrayList<String> strAdmins = new ArrayList<>();
+                int i = 1;
                 for(User u: apiResponse.getUsers()){
-                    strAdmins.add(u.getName());
+                    strAdmins.add(i + ". " +u.getName());
+                    i++;
                 }
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(PreviewSchoolActivity.this,android.R.layout.simple_list_item_1,strAdmins);
                 lvAdmins.setAdapter(arrayAdapter);

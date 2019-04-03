@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
@@ -23,6 +24,7 @@ import dev.kevin.app.schoolservicetracker.models.School;
 
 public class SchoolListActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemClickListener {
 
+    LinearLayout lvHint;
     ListView lvSchools;
     Gson gson = new Gson();
     FloatingActionButton fabRegister;
@@ -33,6 +35,7 @@ public class SchoolListActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_school_list);
 
+        lvHint = findViewById(R.id.lvHint);
         lvSchools = findViewById(R.id.lvSchools);
         lvSchools.setOnItemClickListener(this);
         fabRegister = findViewById(R.id.fabRegisterSchool);
@@ -48,6 +51,13 @@ public class SchoolListActivity extends AppCompatActivity implements View.OnClic
             public void execute(JSONObject response) {
                 ApiResponse apiResponse = gson.fromJson(response.toString(),ApiResponse.class);
                 schools = apiResponse.getSchools();
+
+                if(schools.length == 0){
+                    lvHint.setVisibility(View.VISIBLE);
+                }else{
+                    lvHint.setVisibility(View.GONE);
+                }
+
                 ArrayList<String> schoolNameArrayList = new ArrayList<>();
                 for(School school :apiResponse.getSchools()){
                     if(school.getName() != null){

@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -27,13 +29,17 @@ import java.net.URLEncoder;
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
+import dev.kevin.app.schoolservicetracker.models.School;
 
 public class SelectLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener  {
 
+    Gson gson = new Gson();
     MapView mapView;
     MapboxMap map;
     LatLng latLng;
-    String school;
+    School school;
+    String schoolName,license_no,telephone_no;
+    CardView cvHint;
 
     FloatingActionButton fab1;
 
@@ -44,7 +50,14 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         setContentView(R.layout.activity_select_location);
 
         Intent intent = getIntent();
-        school = intent.getStringExtra("school");
+        String strSchool = intent.getStringExtra("school");
+        if(strSchool != null){
+            school = gson.fromJson(strSchool,School.class);
+            latLng = new LatLng(Double.parseDouble(school.getGeo().getLat()),Double.parseDouble(school.getGeo().getLng()));
+        }
+        schoolName = intent.getStringExtra("schoolName");
+        license_no = intent.getStringExtra("license_no");
+        telephone_no = intent.getStringExtra("telephone_no");
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -54,7 +67,11 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerSchool();
+                if(school != null){
+                    updateSchool();
+                }else{
+                    registerSchool();
+                }
             }
         });
 
@@ -64,6 +81,16 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
                 finish();
             }
         });
+
+        cvHint = findViewById(R.id.cvHint);
+        if(latLng == null){
+            findViewById(R.id.imgCloseHint).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cvHint.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     @Override
@@ -71,7 +98,12 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         map = mapboxMap;
         mapboxMap.setStyle(Style.SATELLITE_STREETS);
         mapboxMap.addOnMapClickListener(this);
-        refreshMapCamera(14.584468,121.045721);
+        if(school != null){
+            refreshMapCamera(latLng.getLatitude(),latLng.getLongitude());
+            mapboxMap.addMarker(new MarkerOptions().setTitle("School Location").setPosition(latLng));
+        }else{
+            refreshMapCamera(14.584468,121.045721);
+        }
     }
 
     private void refreshMapCamera(double lat, double lng){
@@ -104,9 +136,11 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void registerSchool() {
-        String URL = AppConstants.DOMAIN + "school/{name}/{lat}/{lng}";
+        String URL = AppConstants.DOMAIN + "school/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
         try {
-            URL = URL.replace("{name}",URLEncoder.encode(school, "utf-8"));
+            URL = URL.replace("{name}",URLEncoder.encode(schoolName, "utf-8"));
+            URL = URL.replace("{license_no}",URLEncoder.encode(license_no,"utf-8"));
+            URL = URL.replace("{telephone_no}",URLEncoder.encode(telephone_no,"utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -117,6 +151,28 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
             @Override
             public void execute(JSONObject response) {
                 Toast.makeText(SelectLocationActivity.this, "School has been Registered!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    private void updateSchool() {
+        String URL = AppConstants.DOMAIN + "schoolupdate/{id}/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
+        try {
+            URL = URL.replace("{id}",String.valueOf(school.getId()));
+            URL = URL.replace("{name}",URLEncoder.encode(schoolName, "utf-8"));
+            URL = URL.replace("{license_no}",URLEncoder.encode(license_no,"utf-8"));
+            URL = URL.replace("{telephone_no}",URLEncoder.encode(telephone_no,"utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        URL = URL.replace("{lat}",latLng.getLatitude() + "");
+        URL = URL.replace("{lng}",latLng.getLongitude() + "");
+
+        ApiManager.execute(this, URL, new CallbackWithResponse() {
+            @Override
+            public void execute(JSONObject response) {
+                Toast.makeText(SelectLocationActivity.this, "School has been updated!", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

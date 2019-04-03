@@ -3,12 +3,14 @@ package dev.kevin.app.schoolservicetracker.models;
 public class School {
 
     private int id;
-    private String name;
+    private String name, license_no, telephone_no;
     private Geo geo;
 
-    public School(int id, String name, Geo geo) {
+    public School(int id, String name, String licenseNo, String telephoneNO, Geo geo) {
         this.id = id;
         this.name = name;
+        this.license_no = licenseNo;
+        this.telephone_no = telephoneNO;
         this.geo = geo;
     }
 
@@ -16,16 +18,16 @@ public class School {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getLicense_no() {
+        return license_no;
+    }
+
+    public String getTelephone_no() {
+        return telephone_no;
     }
 
     public Geo getGeo() {
