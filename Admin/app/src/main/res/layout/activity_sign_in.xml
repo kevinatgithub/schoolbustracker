@@ -35,6 +35,7 @@
             android:id="@+id/txtUserID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:lines="1"
             android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>
@@ -55,6 +56,9 @@
             android:id="@+id/txtPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="1"
             android:password="true" />
     </android.support.design.widget.TextInputLayout>
 

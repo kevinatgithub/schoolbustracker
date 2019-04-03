@@ -11,19 +11,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.google.zxing.WriterException;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
+import dev.kevin.app.schoolbustrackeradmin.libs.Callback;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
 import dev.kevin.app.schoolbustrackeradmin.libs.Session;
 import dev.kevin.app.schoolbustrackeradmin.models.User;
 import dev.kevin.app.schoolbustrackeradmin.models.Vehicle;
+import retrofit2.http.GET;
 
 public class VehicleDetailsActivity extends AppCompatActivity {
 
@@ -45,15 +49,19 @@ public class VehicleDetailsActivity extends AppCompatActivity {
 
         TextView txtBusNo = findViewById(R.id.txtPlateNo);
         TextView txtDriver = findViewById(R.id.txtDriver);
+        TextView txtModel = findViewById(R.id.txtModel);
+        TextView txtContactNumber = findViewById(R.id.txtContactNo);
 
         txtBusNo.setText(vehicle.getPlate_no());
         txtDriver.setText(vehicle.getDriver());
+        txtModel.setText(vehicle.getModel());
+        txtContactNumber.setText(vehicle.getContact_no());
 
         ImageView imgQr = findViewById(R.id.imgQr);
         Bitmap bitmap;
 
         User user = gson.fromJson(Session.get(this,"user",null),User.class);
-        String school_id = user.getSchool_id()+"";
+        school_id = user.getSchool_id()+"";
 
         QRGEncoder qrgEncoder = new QRGEncoder(school_id+"-" +vehicle.getPlate_no(), null, QRGContents.Type.TEXT, 200);
 
@@ -65,13 +73,16 @@ public class VehicleDetailsActivity extends AppCompatActivity {
         } catch (WriterException e) {
             Toast.makeText(this, "Error QR", Toast.LENGTH_SHORT).show();
         }
-    }
 
-    public void OnClick_RemoveVehicle(View view){
-        String url = AppConstants.DOMAIN + "vehicledelete/{school_id}/{id}";
-        url = url.replace("{school_id}",school_id);
-        url = url.replace("{id}",vehicle.getId()+"");
-        ApiManager.execute(this,url,new RemoveComplete());
+        findViewById(R.id.btnRemoveVehicle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = AppConstants.DOMAIN + "vehicledelete/{school_id}/{id}";
+                url = url.replace("{school_id}",school_id);
+                url = url.replace("{id}",vehicle.getId()+"");
+                ApiManager.execute(VehicleDetailsActivity.this,url,new RemoveComplete());
+            }
+        });
     }
 
     private class RemoveComplete implements CallbackWithResponse{

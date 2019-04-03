@@ -27,33 +27,15 @@ public class ApiManager {
 
     }
 
-    public static void execute(final Activity ACTIVITY,final String URL,final int METHOD,@Nullable final JSONObject JSON_OBJECT,final CallbackWithResponse CALLBACK,@Nullable final Callback ON_ERROR){
-        init(ACTIVITY);
-        requestQueue.add(
-                new JsonObjectRequest(METHOD, URL, JSON_OBJECT, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                            CALLBACK.execute(response);
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            if(ON_ERROR != null){
-                                ON_ERROR.execute();
-                            }
-                        }
-                    }
-                )
-        );
-    }
-
-    public static void execute(final Activity ACTIVITY,final String URL,final CallbackWithResponse CALLBACK){
+    public static void execute(final Activity ACTIVITY,final String URL,final @Nullable CallbackWithResponse CALLBACK){
         init(ACTIVITY);
         requestQueue.add(
                 new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        CALLBACK.execute(response);
+                        if(CALLBACK != null){
+                            CALLBACK.execute(response);
+                        }
                     }
                 }, null)
         );

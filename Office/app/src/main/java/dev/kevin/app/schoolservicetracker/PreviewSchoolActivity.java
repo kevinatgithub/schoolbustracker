@@ -86,7 +86,7 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
                 for(User u: apiResponse.getUsers()){
                     strAdmins.add(u.getName());
                 }
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1,strAdmins);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(PreviewSchoolActivity.this,android.R.layout.simple_list_item_1,strAdmins);
                 lvAdmins.setAdapter(arrayAdapter);
             }
         });
@@ -98,6 +98,12 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
         mapboxMap.setStyle(Style.SATELLITE_STREETS);
         refreshMapCamera(Double.parseDouble(school.getGeo().getLat()),Double.parseDouble(school.getGeo().getLng()));
         mapboxMap.addMarker(new MarkerOptions().setPosition(new LatLng(Double.parseDouble(school.getGeo().getLat()),Double.parseDouble(school.getGeo().getLng()))));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
     }
 
     private void refreshMapCamera(double lat, double lng){

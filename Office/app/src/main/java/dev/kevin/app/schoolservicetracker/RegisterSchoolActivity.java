@@ -1,6 +1,9 @@
 package dev.kevin.app.schoolservicetracker;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,27 +31,20 @@ import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
 
-public class RegisterSchoolActivity extends AppCompatActivity implements View.OnClickListener,OnMapReadyCallback, MapboxMap.OnMapClickListener {
+public class RegisterSchoolActivity extends AppCompatActivity implements View.OnClickListener{
 
-    MapView mapView;
-    MapboxMap map;
-    LatLng latLng;
+    TextInputLayout tlSchool;
     EditText txtSchool;
     Button btnRegister,btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Mapbox.getInstance(this,AppConstants.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_register_school);
 
-        mapView = findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-
+        tlSchool = findViewById(R.id.tlSchool);
         txtSchool = findViewById(R.id.txtSchool);
         btnRegister = findViewById(R.id.btnRegister);
-        btnRegister.setEnabled(false);
         btnRegister.setOnClickListener(this);
         btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -60,57 +56,16 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
     }
 
     @Override
-    public void onMapReady(@NonNull MapboxMap mapboxMap) {
-        map = mapboxMap;
-        mapboxMap.setStyle(Style.SATELLITE_STREETS);
-        mapboxMap.addOnMapClickListener(this);
-        refreshMapCamera(14.584468,121.045721);
-    }
-
-    private void refreshMapCamera(double lat, double lng){
-        if(map == null){
+    public void onClick(View v) {
+        if(txtSchool.getText().toString().equals("")){
+            tlSchool.setError("Please enter name of school");
             return;
         }
-        CameraPosition position = new CameraPosition.Builder()
-                .target(new LatLng(lat, lng))
-                .zoom(16)
-                .build();
-
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(position),5000);
+        String school = txtSchool.getText().toString();
+        Intent i = new Intent(this,SelectLocationActivity.class);
+        i.putExtra("school",school);
+        startActivity(i);
+        finish();
     }
 
-    @Override
-    public boolean onMapClick(@NonNull LatLng point) {
-        map.clear();
-        map.addMarker(new MarkerOptions().setTitle("School Location").setPosition(new LatLng(point.getLatitude(),point.getLongitude())));
-        latLng = point;
-        if(txtSchool.getText().toString().length() > 0){
-            btnRegister.setEnabled(true);
-        }
-        return false;
-    }
-
-    @Override
-    public void onClick(View v) {
-        registerSchool();
-    }
-
-    private void registerSchool() {
-        String URL = AppConstants.DOMAIN + "school/{name}/{lat}/{lng}";
-        try {
-            URL = URL.replace("{name}",URLEncoder.encode(txtSchool.getText().toString(), "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        URL = URL.replace("{lat}",latLng.getLatitude() + "");
-        URL = URL.replace("{lng}",latLng.getLongitude() + "");
-
-        ApiManager.execute(this, URL, new CallbackWithResponse() {
-            @Override
-            public void execute(JSONObject response) {
-                Toast.makeText(RegisterSchoolActivity.this, "School has been Registered!", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
-    }
 }

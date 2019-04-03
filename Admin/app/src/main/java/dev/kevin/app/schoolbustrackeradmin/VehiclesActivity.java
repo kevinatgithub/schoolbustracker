@@ -72,7 +72,7 @@ public class VehiclesActivity extends AppCompatActivity {
             for(Vehicle v: apiResponse.getVehicles()){
                 plateNumbers.add(v.getPlate_no() + " - " + v.getModel());
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1, plateNumbers);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(VehiclesActivity.this,android.R.layout.simple_list_item_1, plateNumbers);
             lv_vehicles.setAdapter(adapter);
         }
     }

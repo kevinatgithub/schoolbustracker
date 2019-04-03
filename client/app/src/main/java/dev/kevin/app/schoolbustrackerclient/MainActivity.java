@@ -3,24 +3,24 @@ package dev.kevin.app.schoolbustrackerclient;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -29,35 +29,31 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import dev.kevin.app.schoolbustrackerclient.libs.ApiManager;
 import dev.kevin.app.schoolbustrackerclient.libs.AppConstants;
-import dev.kevin.app.schoolbustrackerclient.libs.Callback;
-import dev.kevin.app.schoolbustrackerclient.libs.CallbackWithResponse;
 import dev.kevin.app.schoolbustrackerclient.libs.Session;
+import dev.kevin.app.schoolbustrackerclient.model.School;
 import dev.kevin.app.schoolbustrackerclient.model.Vehicle;
+import dev.kevin.app.schoolbustrackerclient.model.Waypoint;
 
 public class MainActivity  extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     MapView mapView;
     MapboxMap map;
     Icon icon;
+    private Marker marker;
+    Gson gson = new Gson();
+    Vehicle vehicle;
+    School school;
 
     protected LocationManager mLocationManager;
 
     protected static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
 
     protected static final long MIN_TIME_BW_UPDATES = 5;
-
-    private Marker marker;
-
-    Gson gson = new Gson();
-    Vehicle vehicle;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +80,8 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         Intent intent = getIntent();
         String strVehicle = intent.getStringExtra("vehicle");
         vehicle = gson.fromJson(strVehicle,Vehicle.class);
+        String strSchool = Session.get(this,"school",null);
+        school = gson.fromJson(strSchool,School.class);
 
         beginGettingLocation();
 
@@ -95,11 +93,22 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         map = mapboxMap;
         mapboxMap.setStyle(Style.TRAFFIC_DAY);
 
-        if(vehicle == null){
-            refreshMapCamera(14.591608,120.977527);
-        }else{
-            refreshMapCamera(vehicle.getLat(),vehicle.getLng());
+
+        if(school != null){
+            double lat,lng;
+            lat = Double.parseDouble(school.getGeo().getLat());
+            lng = Double.parseDouble(school.getGeo().getLng());
+            mapboxMap.addMarker(new MarkerOptions().setTitle(school.getName()).setPosition(new LatLng(lat,lng)));
         }
+
+        if(vehicle != null){
+            double lat,lng;
+            lat = vehicle.getLat();
+            lng = vehicle.getLng();
+            displayMarkerOnMap(lat,lng);
+        }
+
+        refreshMapCamera(vehicle.getLat(),vehicle.getLng());
     }
 
     private void refreshMapCamera(double latitude, double longtitude){
@@ -159,9 +168,7 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
     public void onLocationChanged(final Location location) {
 
         refreshMapCamera(location.getLatitude(),location.getLongitude());
-        displayMarkerOnMap(location);
-
-//        Toast.makeText(this, location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        displayMarkerOnMap(location.getLatitude(),location.getLongitude());
         reportDeviceLocation(location);
     }
 
@@ -173,12 +180,7 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
         String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+vehicle.getId()+"/"+location.getLatitude()+"/"+location.getLongitude();
 
-        ApiManager.execute(this, url, new CallbackWithResponse() {
-            @Override
-            public void execute(JSONObject response) {
-
-            }
-        });
+        ApiManager.execute(this, url, null);
     }
 
     @Override
@@ -196,16 +198,16 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
     }
 
-    private void displayMarkerOnMap(final Location location) {
+    private void displayMarkerOnMap(double lat, double lng) {
         if(map == null){
             return;
         }
         if(marker == null){
-            map.addMarker(new MarkerOptions().setTitle("Your Location").setPosition(new LatLng(location.getLatitude(),location.getLongitude()))).setIcon(icon);
+            map.addMarker(new MarkerOptions().setTitle("Your Location").setPosition(new LatLng(lat,lng))).setIcon(icon);
             ArrayList<Marker> markers = (ArrayList<Marker>) map.getMarkers();
-            marker = markers.get(0);
+            marker = markers.get(1);
         }else{
-            marker.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
+            marker.setPosition(new LatLng(lat,lng));
         }
     }
 }

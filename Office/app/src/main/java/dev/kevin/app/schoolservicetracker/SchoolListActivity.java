@@ -55,7 +55,7 @@ public class SchoolListActivity extends AppCompatActivity implements View.OnClic
                     }
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1, schoolNameArrayList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(SchoolListActivity.this,android.R.layout.simple_list_item_1, schoolNameArrayList);
                 lvSchools.setAdapter(adapter);
             }
         });

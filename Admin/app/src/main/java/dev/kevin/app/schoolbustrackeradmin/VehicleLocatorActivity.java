@@ -37,10 +37,12 @@ import dev.kevin.app.schoolbustrackeradmin.models.Vehicle;
 public class VehicleLocatorActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     MapView mapView;
+    MapboxMap map;
     Icon icon,schoolIcon;
     ArrayList<Vehicle> vehicles = new ArrayList<>();
     Gson gson = new Gson();
     User user;
+    ArrayList<MapMarkerOptions> markers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +70,6 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
         });
     }
 
-    MapboxMap map;
-
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
@@ -82,12 +82,16 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
         fetchBusesCoordinates();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
     private void fetchBusesCoordinates() {
         String url = AppConstants.DOMAIN + "vehicles/"+user.getSchool_id();
         ApiManager.execute(this,url,new VehiclesLoaded());
     }
-
-    ArrayList<MapMarkerOptions> markers = new ArrayList<>();
 
     private class VehiclesLoaded implements CallbackWithResponse{
 
@@ -158,7 +162,6 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
             }
         });
     }
-
 
     private void refreshMapCamera(double latitude, double longtitude){
         if(map == null){
