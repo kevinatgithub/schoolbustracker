@@ -2,6 +2,7 @@ package dev.kevin.app.schoolbustrackerclient.libs;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,7 +28,7 @@ public class ApiManager {
 
     }
 
-    public static void execute(final Activity ACTIVITY,final String URL,final @Nullable CallbackWithResponse CALLBACK){
+    public static void execute(final Activity ACTIVITY,final String URL,@Nullable final CallbackWithResponse CALLBACK){
         init(ACTIVITY);
         requestQueue.add(
                 new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
@@ -37,7 +38,12 @@ public class ApiManager {
                             CALLBACK.execute(response);
                         }
                     }
-                }, null)
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(ACTIVITY, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
         );
     }
 

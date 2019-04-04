@@ -94,7 +94,8 @@ public class ScanQRActivity extends Activity {
             }
         });
 
-        assignQRtoSession("3-0");
+        // TODO: 04/04/2019 Remove in production
+        assignQRtoSession("1-0");
     }
 
     @Override

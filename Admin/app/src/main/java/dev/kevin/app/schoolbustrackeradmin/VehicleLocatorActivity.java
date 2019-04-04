@@ -122,7 +122,6 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
                     map.addMarker(opt.getMarkerOptions());
                 }
 
-                processDistanceFromSchool(vehicle);
             }
 
             new android.os.Handler().postDelayed(
@@ -132,35 +131,6 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
                         }
                     },3000);
         }
-    }
-
-    private void processDistanceFromSchool(Vehicle vehicle) {
-        School school = user.getSchool();
-        double lat = Double.parseDouble(school.getLat());
-        double lng = Double.parseDouble(school.getLng());
-
-        Double distance = distance(lat,vehicle.getLat(),lng,vehicle.getLng(),0,0);
-
-        String status = vehicle.getStatus() != null ? vehicle.getStatus() : "";
-        if(distance < 100 && !status.equals("In School")){
-            updateVehicleStatus(vehicle.getId(),"In School");
-        }else if(!status.equals("In Transit") && !status.equals("Destress")){
-            updateVehicleStatus(vehicle.getId(),"In Transit");
-        }
-    }
-
-    private void updateVehicleStatus(int id,String status){
-        String url = AppConstants.DOMAIN + "vehiclestatus/{school_id}/{id}/{status}";
-        url = url.replace("{school_id}",user.getSchool().getId()+"");
-        url = url.replace("{id}",id+"");
-        url = url.replace("{status}",status);
-
-        ApiManager.execute(this, url, new CallbackWithResponse() {
-            @Override
-            public void execute(JSONObject response) {
-
-            }
-        });
     }
 
     private void refreshMapCamera(double latitude, double longtitude){
@@ -176,25 +146,7 @@ public class VehicleLocatorActivity extends AppCompatActivity implements OnMapRe
         map.animateCamera(CameraUpdateFactory.newCameraPosition(position),5000);
     }
 
-    public static double distance(double lat1, double lat2, double lon1,
-                                  double lon2, double el1, double el2) {
 
-        final int R = 6371; // Radius of the earth
-
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000; // convert to meters
-
-        double height = el1 - el2;
-
-        distance = Math.pow(distance, 2) + Math.pow(height, 2);
-
-        return Math.sqrt(distance);
-    }
 
 
 }

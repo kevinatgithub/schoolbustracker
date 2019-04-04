@@ -3,7 +3,6 @@ package dev.kevin.app.schoolbustrackerclient;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,14 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.mapbox.api.directions.v5.MapboxDirections;
-import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -31,15 +27,16 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import dev.kevin.app.schoolbustrackerclient.libs.ApiManager;
 import dev.kevin.app.schoolbustrackerclient.libs.AppConstants;
+import dev.kevin.app.schoolbustrackerclient.libs.AppHelper;
 import dev.kevin.app.schoolbustrackerclient.libs.Session;
 import dev.kevin.app.schoolbustrackerclient.model.School;
 import dev.kevin.app.schoolbustrackerclient.model.Vehicle;
-import dev.kevin.app.schoolbustrackerclient.model.Waypoint;
 
 public class MainActivity  extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
@@ -178,6 +175,7 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         refreshMapCamera(location.getLatitude(),location.getLongitude());
         displayMarkerOnMap(location.getLatitude(),location.getLongitude());
         reportDeviceLocation(location);
+        processDistanceFromSchool(location);
     }
 
     private void reportDeviceLocation(Location location) {
@@ -217,5 +215,48 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         }else{
             marker.setPosition(new LatLng(lat,lng));
         }
+    }
+
+    private void processDistanceFromSchool(Location location) {
+        double lat = Double.parseDouble(school.getGeo().getLat());
+        double lng = Double.parseDouble(school.getGeo().getLng());
+
+        Double distance = distance(lat,location.getLatitude(),lng,location.getLongitude(),0,0);
+
+        String status = vehicle.getStatus() != null ? vehicle.getStatus() : "";
+        if(distance < 100 && !status.equals("In School")){
+            updateVehicleStatus(vehicle.getId(),"In School");
+        }else if(!status.equals("In Transit") && !status.equals("Destress")){
+            updateVehicleStatus(vehicle.getId(),"In Transit");
+        }
+    }
+
+    private void updateVehicleStatus(int id,String status){
+        String url = AppConstants.DOMAIN + "vehiclestatus/{school_id}/{id}/{status}";
+        url = url.replace("{school_id}",school.getId()+"");
+        url = url.replace("{id}",id+"");
+        url = url.replace("{status}",AppHelper.urlEncode(status));
+
+        ApiManager.execute(this, url, null);
+    }
+
+    public static double distance(double lat1, double lat2, double lon1,
+                                  double lon2, double el1, double el2) {
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
     }
 }

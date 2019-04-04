@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -23,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
     Gson gson = new Gson();
     Vehicle vehicle;
     School school;
+    Button btnStartTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +51,13 @@ public class HomeActivity extends AppCompatActivity {
 
             loadVehicleDetails(qrcode);
 
-            findViewById(R.id.btnStartTracker).setOnClickListener(new View.OnClickListener() {
+            btnStartTracker = findViewById(R.id.btnStartTracker);
+            btnStartTracker.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(vehicle == null){
+                        return;
+                    }
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                     intent.putExtra("vehicle",gson.toJson(vehicle));
                     startActivity(intent);
@@ -86,6 +92,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 if(vehicle == null){
                     lblLoading.setText("Please scan QR to get vehicle details");
+                    btnStartTracker.setEnabled(false);
                     return;
                 }
                 lblPlateNumber.setText(vehicle.getPlate_no());
