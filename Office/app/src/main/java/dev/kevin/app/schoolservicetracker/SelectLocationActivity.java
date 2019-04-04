@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
+import dev.kevin.app.schoolservicetracker.libs.AppHelper;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
 import dev.kevin.app.schoolservicetracker.models.School;
 
@@ -137,13 +138,9 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
 
     private void registerSchool() {
         String URL = AppConstants.DOMAIN + "school/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
-        try {
-            URL = URL.replace("{name}",URLEncoder.encode(schoolName, "utf-8"));
-            URL = URL.replace("{license_no}",URLEncoder.encode(license_no,"utf-8"));
-            URL = URL.replace("{telephone_no}",URLEncoder.encode(telephone_no,"utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        URL = URL.replace("{name}",AppHelper.urlEncode(schoolName));
+        URL = URL.replace("{license_no}",AppHelper.urlEncode(license_no));
+        URL = URL.replace("{telephone_no}",AppHelper.urlEncode(telephone_no));
         URL = URL.replace("{lat}",latLng.getLatitude() + "");
         URL = URL.replace("{lng}",latLng.getLongitude() + "");
 
@@ -158,14 +155,10 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
 
     private void updateSchool() {
         String URL = AppConstants.DOMAIN + "schoolupdate/{id}/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
-        try {
-            URL = URL.replace("{id}",String.valueOf(school.getId()));
-            URL = URL.replace("{name}",URLEncoder.encode(schoolName, "utf-8"));
-            URL = URL.replace("{license_no}",URLEncoder.encode(license_no,"utf-8"));
-            URL = URL.replace("{telephone_no}",URLEncoder.encode(telephone_no,"utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        URL = URL.replace("{id}",String.valueOf(school.getId()));
+        URL = URL.replace("{name}",AppHelper.urlEncode(schoolName));
+        URL = URL.replace("{license_no}",AppHelper.urlEncode(license_no));
+        URL = URL.replace("{telephone_no}",AppHelper.urlEncode(telephone_no));
         URL = URL.replace("{lat}",latLng.getLatitude() + "");
         URL = URL.replace("{lng}",latLng.getLongitude() + "");
 

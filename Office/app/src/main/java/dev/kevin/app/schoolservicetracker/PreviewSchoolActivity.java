@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -23,10 +24,13 @@ import com.mapbox.mapboxsdk.maps.Style;
 
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
+import dev.kevin.app.schoolservicetracker.libs.AppHelper;
 import dev.kevin.app.schoolservicetracker.libs.Callback;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
 import dev.kevin.app.schoolservicetracker.libs.ConfirmDialogHelper;
@@ -43,6 +47,7 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
     TextView lblSchool,lblLicenseNo,lblTelephoneNo;
     ListView lvAdmins;
     LinearLayout lvHint;
+    User[] users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,18 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
         lblTelephoneNo.setText("Telephone No." +school.getTelephone_no());
 
         lvAdmins = findViewById(R.id.lvAdmins);
+        lvAdmins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final User user = users[position];
+                ConfirmDialogHelper.confirm(PreviewSchoolActivity.this, "Delete Administrator", "Delete School Administrator?", new Callback() {
+                    @Override
+                    public void execute() {
+                        deleteUser(user);
+                    }
+                });
+            }
+        });
 
         lvHint = findViewById(R.id.lvHint);
 
@@ -101,6 +118,18 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
         });
     }
 
+    private void deleteUser(User user) {
+        String user_id = AppHelper.urlEncode(user.getUser_id());
+        String url = AppConstants.DOMAIN + "admindelete/"+user.getUser_id();
+        ApiManager.execute(this, url, new CallbackWithResponse() {
+            @Override
+            public void execute(JSONObject response) {
+                Toast.makeText(PreviewSchoolActivity.this, "School Administrator has been deleted", Toast.LENGTH_SHORT).show();
+                loadSchoolAdmins();
+            }
+        });
+    }
+
     private void deleteSchool() {
         String url = AppConstants.DOMAIN + "schooldelete/"+school.getId();
         ApiManager.execute(this, url, new CallbackWithResponse() {
@@ -124,6 +153,7 @@ public class PreviewSchoolActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void execute(JSONObject response) {
                 ApiResponse apiResponse = gson.fromJson(response.toString(),ApiResponse.class);
+                users = apiResponse.getUsers();
                 if(apiResponse.getUsers().length == 0){
                     lvHint.setVisibility(View.VISIBLE);
                 }else{
