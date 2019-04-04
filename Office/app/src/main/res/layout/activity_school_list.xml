@@ -16,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Registered Schools"
-            app:titleTextColor="#ffffff"/>
+            app:titleTextColor="#ffffff"
+            app:navigationIcon="@drawable/ic_lock_w"/>
     </android.support.design.widget.AppBarLayout>
 
     <TextView

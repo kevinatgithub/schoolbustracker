@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.gson.Gson;
 
@@ -19,7 +23,10 @@ import java.util.Arrays;
 
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
+import dev.kevin.app.schoolservicetracker.libs.Callback;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
+import dev.kevin.app.schoolservicetracker.libs.ConfirmDialogHelper;
+import dev.kevin.app.schoolservicetracker.libs.Session;
 import dev.kevin.app.schoolservicetracker.models.School;
 
 public class SchoolListActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemClickListener {
@@ -35,11 +42,33 @@ public class SchoolListActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_school_list);
 
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
         lvHint = findViewById(R.id.lvHint);
         lvSchools = findViewById(R.id.lvSchools);
         lvSchools.setOnItemClickListener(this);
         fabRegister = findViewById(R.id.fabRegisterSchool);
         fabRegister.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ConfirmDialogHelper.confirm(this, "Sign-out", "Do you wan't to signout?", new Callback() {
+            @Override
+            public void execute() {
+                signout();
+            }
+        });
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void signout() {
+        Session.delete(this,"user");
+        Intent i = new Intent(this,LoginActivity.class);
+        startActivity(i);
+        Toast.makeText(this, "You have succesfully signed-out", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
