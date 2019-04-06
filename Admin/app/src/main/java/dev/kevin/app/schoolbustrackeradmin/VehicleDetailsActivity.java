@@ -63,7 +63,7 @@ public class VehicleDetailsActivity extends AppCompatActivity {
         User user = gson.fromJson(Session.get(this,"user",null),User.class);
         school_id = user.getSchool_id()+"";
 
-        QRGEncoder qrgEncoder = new QRGEncoder(school_id+"-" +vehicle.getPlate_no(), null, QRGContents.Type.TEXT, 200);
+        QRGEncoder qrgEncoder = new QRGEncoder(school_id+"-" +vehicle.getId(), null, QRGContents.Type.TEXT, 200);
 
         try {
             // Getting QR-Code as Bitmap

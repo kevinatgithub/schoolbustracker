@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.CameraSource;
@@ -95,7 +96,14 @@ public class ScanQRActivity extends Activity {
         });
 
         // TODO: 04/04/2019 Remove in production
-        assignQRtoSession("1-0");
+//        assignQRtoSession("1-0");
+
+        findViewById(R.id.btnWorkAround).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                assignQRtoSession("1-1");
+            }
+        });
     }
 
     @Override
