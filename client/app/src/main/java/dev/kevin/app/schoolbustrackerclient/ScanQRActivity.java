@@ -21,6 +21,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import dev.kevin.app.schoolbustrackerclient.libs.ConfirmDialogHelper;
 import dev.kevin.app.schoolbustrackerclient.libs.Session;
 
 import static com.google.android.gms.vision.CameraSource.CAMERA_FACING_BACK;
@@ -101,7 +102,12 @@ public class ScanQRActivity extends Activity {
         findViewById(R.id.btnWorkAround).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                assignQRtoSession("1-1");
+                ConfirmDialogHelper.prompt(ScanQRActivity.this, "Enter QR Value", "", new ConfirmDialogHelper.OnPromptCallback() {
+                    @Override
+                    public void execute(String value) {
+                        assignQRtoSession(value);
+                    }
+                });
             }
         });
     }

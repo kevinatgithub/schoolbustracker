@@ -9,66 +9,95 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent"></com.mapbox.mapboxsdk.maps.MapView>
 
-    </com.mapbox.mapboxsdk.maps.MapView>
-
-    <!--<android.support.v7.widget.CardView-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="300dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
-
-            <!--<ImageButton-->
-                <!--android:id="@+id/imageButton"-->
-                <!--android:layout_width="80dp"-->
-                <!--android:layout_height="80dp"-->
-                <!--android:layout_marginStart="8dp"-->
-                <!--android:layout_marginTop="8dp"-->
-                <!--android:backgroundTint="@android:color/background_light"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toTopOf="parent"-->
-                <!--app:srcCompat="@drawable/ic_traffic" />-->
-
-            <!--<TextView-->
-                <!--android:id="@+id/textView"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="8dp"-->
-                <!--android:text="Traffic Mode"-->
-                <!--android:textSize="10sp"-->
-                <!--app:layout_constraintEnd_toEndOf="@+id/imageButton"-->
-                <!--app:layout_constraintStart_toStartOf="@+id/imageButton"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/imageButton" />-->
-        <!--</android.support.constraint.ConstraintLayout>-->
-    <!--</android.support.v7.widget.CardView>-->
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginStart="8dp"
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvOptions"
+        android:layout_width="300dp"
+        android:layout_height="115dp"
+        android:layout_marginBottom="24dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="28dp"
-        android:src="@drawable/ic_menu"
-        app:backgroundTint="@color/colorPrimaryDark"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-    </android.support.design.widget.FloatingActionButton>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/imgTraffic"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#c1c1c1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_traffic" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="TRAFFIC"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@+id/imgTraffic"
+                app:layout_constraintStart_toStartOf="@+id/imgTraffic"
+                app:layout_constraintTop_toBottomOf="@+id/imgTraffic" />
+
+            <ImageButton
+                android:id="@+id/imgDistress"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#c1c1c1"
+                app:layout_constraintStart_toEndOf="@+id/imgTraffic"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_distress" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="DISTRESS"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@+id/imgDistress"
+                app:layout_constraintStart_toStartOf="@+id/imgDistress"
+                app:layout_constraintTop_toBottomOf="@+id/imgDistress" />
+
+            <ImageButton
+                android:id="@+id/imgTransit"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="116dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#c1c1c1"
+                app:layout_constraintStart_toEndOf="@+id/imgTraffic"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_normal" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="TRANSIT"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@+id/imgTransit"
+                app:layout_constraintStart_toStartOf="@+id/imgTransit"
+                app:layout_constraintTop_toBottomOf="@+id/imgTransit" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
 
 
 </android.support.constraint.ConstraintLayout>

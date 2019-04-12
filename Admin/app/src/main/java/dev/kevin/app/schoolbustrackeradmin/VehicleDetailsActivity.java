@@ -63,6 +63,7 @@ public class VehicleDetailsActivity extends AppCompatActivity {
         User user = gson.fromJson(Session.get(this,"user",null),User.class);
         school_id = user.getSchool_id()+"";
 
+        Toast.makeText(this, school_id+"-" +vehicle.getId(), Toast.LENGTH_SHORT).show();
         QRGEncoder qrgEncoder = new QRGEncoder(school_id+"-" +vehicle.getId(), null, QRGContents.Type.TEXT, 200);
 
         try {

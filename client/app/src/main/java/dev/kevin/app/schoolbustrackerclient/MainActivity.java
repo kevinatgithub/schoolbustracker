@@ -1,6 +1,7 @@
 package dev.kevin.app.schoolbustrackerclient;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -47,6 +50,8 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
     Gson gson = new Gson();
     Vehicle vehicle;
     School school;
+    String status;
+    ImageButton imgTransit, imgTraffic, imgDistress;
 
     protected LocationManager mLocationManager;
 
@@ -84,7 +89,82 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
         beginGettingLocation();
 
+        findViewById(R.id.imgTransit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                status = "In Transit";
+                applyStatusChanges();
+            }
+        });
 
+        findViewById(R.id.imgTraffic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                status = "In Traffic";
+                applyStatusChanges();
+            }
+        });
+
+        findViewById(R.id.imgDistress).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                status = "In Distress";
+                applyStatusChanges();
+            }
+        });
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        String stat = Session.get(this,"status",null);
+
+        if(school != null){
+            if(stat == null){
+                updateVehicleStatus(school.getId(),"In School");
+                status = "In School";
+                stat = "In School";
+                Session.set(this,"status","In School");
+            }else{
+                status = stat;
+            }
+        }
+
+
+        applyStatusChanges();
+    }
+
+    private void applyStatusChanges() {
+        updateVehicleStatus(vehicle.getId(),status);
+
+
+        imgTransit = findViewById(R.id.imgTransit);
+        imgTraffic = findViewById(R.id.imgTraffic);
+        imgDistress = findViewById(R.id.imgDistress);
+
+        switch(status){
+            case "In School":
+            case "In Transit":
+                setImageButtonBackgrounColor(imgTransit,android.R.color.holo_green_light);
+                setImageButtonBackgrounColor(imgTraffic,R.color.colorGray);
+                setImageButtonBackgrounColor(imgDistress,R.color.colorGray);
+                break;
+            case "In Traffic":
+                setImageButtonBackgrounColor(imgTransit,R.color.colorGray);
+                setImageButtonBackgrounColor(imgTraffic,android.R.color.holo_red_light);
+                setImageButtonBackgrounColor(imgDistress,R.color.colorGray);
+                break;
+            case "In Distress":
+                setImageButtonBackgrounColor(imgTransit,R.color.colorGray);
+                setImageButtonBackgrounColor(imgTraffic,R.color.colorGray);
+                setImageButtonBackgrounColor(imgDistress,android.R.color.holo_red_light);
+                break;
+        }
+    }
+
+    private void setImageButtonBackgrounColor(ImageButton imgButton, int color){
+        imgButton.setBackgroundTintList(ContextCompat.getColorStateList(this,color));
     }
 
     @Override
@@ -224,9 +304,9 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         Double distance = distance(lat,location.getLatitude(),lng,location.getLongitude(),0,0);
 
         String status = vehicle.getStatus() != null ? vehicle.getStatus() : "";
-        if(distance < 100 && !status.equals("In School")){
+        if(distance < 200 && !status.equals("In School")){
             updateVehicleStatus(vehicle.getId(),"In School");
-        }else if(!status.equals("In Transit") && !status.equals("Destress")){
+        }else if(!status.equals("In Transit") && !status.equals("IN Distress")){
             updateVehicleStatus(vehicle.getId(),"In Transit");
         }
     }
