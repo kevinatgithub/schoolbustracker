@@ -5,13 +5,15 @@ public class School {
     private int id;
     private String name, license_no, telephone_no;
     private Geo geo;
+    private String enable_parent_tracking;
 
-    public School(int id, String name, String licenseNo, String telephoneNO, Geo geo) {
+    public School(int id, String name, String licenseNo, String telephoneNO, Geo geo, String enable_parent_tracking) {
         this.id = id;
         this.name = name;
         this.license_no = licenseNo;
         this.telephone_no = telephoneNO;
         this.geo = geo;
+        this.enable_parent_tracking = enable_parent_tracking;
     }
 
     public int getId() {
@@ -64,5 +66,7 @@ public class School {
         }
     }
 
-
+    public String getEnable_parent_tracking() {
+        return enable_parent_tracking;
+    }
 }

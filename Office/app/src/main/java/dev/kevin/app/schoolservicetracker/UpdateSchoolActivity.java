@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.google.gson.Gson;
 
@@ -20,6 +21,7 @@ public class UpdateSchoolActivity extends AppCompatActivity implements View.OnCl
     Button btnRegister,btnCancel;
     Gson gson = new Gson();
     School school;
+    Switch switchEnableParentTracking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,12 @@ public class UpdateSchoolActivity extends AppCompatActivity implements View.OnCl
                 finish();
             }
         });
+        switchEnableParentTracking = findViewById(R.id.switchEnableParentTracking);
+        if(school.getEnable_parent_tracking() != null){
+            if(school.getEnable_parent_tracking().equals("1")){
+                switchEnableParentTracking.setChecked(true);
+            }
+        }
     }
 
     @Override
@@ -78,11 +86,16 @@ public class UpdateSchoolActivity extends AppCompatActivity implements View.OnCl
         String name = txtSchool.getText().toString();
         String licenseNo = txtLicenseNo.getText().toString();
         String telephoneNo = txtTelephoneNo.getText().toString();
+        String enableParentTracking = "1";
+        if(!switchEnableParentTracking.isChecked()){
+            enableParentTracking = "0";
+        }
         Intent i = new Intent(this,SelectLocationActivity.class);
         i.putExtra("school",gson.toJson(school));
         i.putExtra("schoolName",name);
         i.putExtra("license_no",licenseNo);
         i.putExtra("telephone_no",telephoneNo);
+        i.putExtra("enable_parent_tracking",enableParentTracking);
         startActivity(i);
         finish();
     }

@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import dev.kevin.app.schoolbustrackeradmin.libs.ApiManager;
 import dev.kevin.app.schoolbustrackeradmin.libs.AppConstants;
+import dev.kevin.app.schoolbustrackeradmin.libs.AppHelper;
 import dev.kevin.app.schoolbustrackeradmin.libs.CallbackWithResponse;
 import dev.kevin.app.schoolbustrackeradmin.libs.Session;
 import dev.kevin.app.schoolbustrackeradmin.models.User;
@@ -89,10 +90,10 @@ public class VehicleFormActivity extends AppCompatActivity {
     private void submitVehicleDetailsToApi(String plateNo, String model, String driverName, String contactNumber) {
         String url = AppConstants.DOMAIN + "vehicle/{school_id}/{plate_no}/{model}/{driver}/{contact_no}";
         url = url.replace("{school_id}",school_id+"");
-        url = url.replace("{plate_no}",plateNo);
-        url = url.replace("{model}",model);
-        url = url.replace("{driver}",driverName);
-        url = url.replace("{contact_no}",contactNumber);
+        url = url.replace("{plate_no}", AppHelper.urlEncode(plateNo));
+        url = url.replace("{model}",AppHelper.urlEncode(model));
+        url = url.replace("{driver}",AppHelper.urlEncode(driverName));
+        url = url.replace("{contact_no}",AppHelper.urlEncode(contactNumber));
 
         ApiManager.execute(this,url,new VehicleDetailsSaved());
     }

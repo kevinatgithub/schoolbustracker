@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
@@ -36,6 +37,7 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
     TextInputLayout tlSchool,tlLicenseNo,tlTelephoneNo;
     EditText txtSchool,txtLicenseNo,txtTelephoneNo;
     Button btnRegister,btnCancel;
+    Switch switchEnableParentTracking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
                 finish();
             }
         });
+        switchEnableParentTracking = findViewById(R.id.switchEnableParentTracking);
     }
 
     @Override
@@ -84,10 +87,15 @@ public class RegisterSchoolActivity extends AppCompatActivity implements View.On
         String school = txtSchool.getText().toString();
         String licenseNo = txtLicenseNo.getText().toString();
         String telephoneNo = txtTelephoneNo.getText().toString();
+        String enableParentTracking = "1";
+        if(!switchEnableParentTracking.isChecked()){
+            enableParentTracking = "0";
+        }
         Intent i = new Intent(this,SelectLocationActivity.class);
         i.putExtra("schoolName",school);
         i.putExtra("license_no",licenseNo);
         i.putExtra("telephone_no",telephoneNo);
+        i.putExtra("enable_parent_tracking",enableParentTracking);
         startActivity(i);
         finish();
     }

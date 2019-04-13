@@ -264,7 +264,7 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
         String school_id = parts[0];
         String plate_no = parts[1];
 
-        String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+vehicle.getId()+"/"+location.getLatitude()+"/"+location.getLongitude();
+        String url = AppConstants.DOMAIN+"vehiclelocation/"+school_id+"/"+vehicle.getId()+"/"+AppHelper.urlEncode(location.getLatitude() + "")+"/"+AppHelper.urlEncode(location.getLongitude()+"");
 
         ApiManager.execute(this, url, null);
     }
@@ -313,8 +313,8 @@ public class MainActivity  extends AppCompatActivity implements LocationListener
 
     private void updateVehicleStatus(int id,String status){
         String url = AppConstants.DOMAIN + "vehiclestatus/{school_id}/{id}/{status}";
-        url = url.replace("{school_id}",school.getId()+"");
-        url = url.replace("{id}",id+"");
+        url = url.replace("{school_id}",String.valueOf(school.getId()));
+        url = url.replace("{id}",String.valueOf(id));
         url = url.replace("{status}",AppHelper.urlEncode(status));
 
         ApiManager.execute(this, url, null);

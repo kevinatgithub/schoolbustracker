@@ -5,8 +5,9 @@ public class Vehicle {
     private int id,reassign;
     private String plate_no, model, driver, contact_no,status;
     private double lat,lng;
+    private String enable_parent_tracking;
 
-    public Vehicle(int id, int reassign, String plate_no, String model, String driver, String contact_no, String status, double lat, double lng) {
+    public Vehicle(int id, int reassign, String plate_no, String model, String driver, String contact_no, String status, double lat, double lng, String enable_parent_tracking) {
         this.id = id;
         this.reassign = reassign;
         this.plate_no = plate_no;
@@ -16,6 +17,7 @@ public class Vehicle {
         this.status = status;
         this.lat = lat;
         this.lng = lng;
+        this.enable_parent_tracking = enable_parent_tracking;
     }
 
     public int getId() {
@@ -52,5 +54,9 @@ public class Vehicle {
 
     public double getLng() {
         return lng;
+    }
+
+    public String getEnable_parent_tracking() {
+        return enable_parent_tracking;
     }
 }

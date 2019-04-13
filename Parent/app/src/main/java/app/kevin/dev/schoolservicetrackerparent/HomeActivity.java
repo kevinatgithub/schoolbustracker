@@ -55,6 +55,14 @@ public class HomeActivity extends AppCompatActivity {
                 attemptLoadVehicles();
             }
         });
+
+        findViewById(R.id.fabTracker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this,TrackerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

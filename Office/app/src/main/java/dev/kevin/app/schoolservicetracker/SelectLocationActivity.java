@@ -39,7 +39,7 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
     MapboxMap map;
     LatLng latLng;
     School school;
-    String schoolName,license_no,telephone_no;
+    String schoolName,license_no,telephone_no,enableParentTracking;
     CardView cvHint;
 
     FloatingActionButton fab1;
@@ -59,6 +59,7 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         schoolName = intent.getStringExtra("schoolName");
         license_no = intent.getStringExtra("license_no");
         telephone_no = intent.getStringExtra("telephone_no");
+        enableParentTracking = intent.getStringExtra("enable_parent_tracking");
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -137,12 +138,13 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void registerSchool() {
-        String URL = AppConstants.DOMAIN + "school/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
+        String URL = AppConstants.DOMAIN + "school/{name}/{license_no}/{telephone_no}/{lat}/{lng}/{enable_parent_tracking}";
         URL = URL.replace("{name}",AppHelper.urlEncode(schoolName));
         URL = URL.replace("{license_no}",AppHelper.urlEncode(license_no));
         URL = URL.replace("{telephone_no}",AppHelper.urlEncode(telephone_no));
         URL = URL.replace("{lat}",latLng.getLatitude() + "");
         URL = URL.replace("{lng}",latLng.getLongitude() + "");
+        URL = URL.replace("{enable_parent_tracking}",enableParentTracking);
 
         ApiManager.execute(this, URL, new CallbackWithResponse() {
             @Override
@@ -154,13 +156,14 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void updateSchool() {
-        String URL = AppConstants.DOMAIN + "schoolupdate/{id}/{name}/{license_no}/{telephone_no}/{lat}/{lng}";
+        String URL = AppConstants.DOMAIN + "schoolupdate/{id}/{name}/{license_no}/{telephone_no}/{lat}/{lng}/{enable_parent_tracking}";
         URL = URL.replace("{id}",String.valueOf(school.getId()));
         URL = URL.replace("{name}",AppHelper.urlEncode(schoolName));
         URL = URL.replace("{license_no}",AppHelper.urlEncode(license_no));
         URL = URL.replace("{telephone_no}",AppHelper.urlEncode(telephone_no));
         URL = URL.replace("{lat}",latLng.getLatitude() + "");
         URL = URL.replace("{lng}",latLng.getLongitude() + "");
+        URL = URL.replace("{enable_parent_tracking}",enableParentTracking);
 
         ApiManager.execute(this, URL, new CallbackWithResponse() {
             @Override
