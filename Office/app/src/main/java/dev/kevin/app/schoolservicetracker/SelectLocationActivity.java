@@ -4,10 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -25,16 +29,20 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import dev.kevin.app.schoolservicetracker.libs.ApiManager;
 import dev.kevin.app.schoolservicetracker.libs.AppConstants;
 import dev.kevin.app.schoolservicetracker.libs.AppHelper;
 import dev.kevin.app.schoolservicetracker.libs.CallbackWithResponse;
+import dev.kevin.app.schoolservicetracker.models.GeocodingResult;
 import dev.kevin.app.schoolservicetracker.models.School;
 
 public class SelectLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener  {
 
     Gson gson = new Gson();
+    TextInputLayout tlAddress;
+    EditText txtAddress;
     MapView mapView;
     MapboxMap map;
     LatLng latLng;
@@ -49,6 +57,24 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this,AppConstants.MAPBOX_ACCESS_TOKEN);
         setContentView(R.layout.activity_select_location);
+
+        tlAddress = findViewById(R.id.tlAddress);
+        txtAddress = findViewById(R.id.txtAddress);
+        txtAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                String value = v.getText().toString();
+                if(value == null){
+                    return false;
+                }
+                if(value.isEmpty()){
+                    return false;
+                }
+
+                geoCodeAddress(value);
+                return false;
+            }
+        });
 
         Intent intent = getIntent();
         String strSchool = intent.getStringExtra("school");
@@ -92,6 +118,51 @@ public class SelectLocationActivity extends AppCompatActivity implements OnMapRe
                     cvHint.setVisibility(View.GONE);
                 }
             });
+        }
+    }
+
+    private void geoCodeAddress(String value) {
+        String url = AppConstants.MAP_QUEST_DIRECTION_URL;
+        url = url.replace("[LOCATION]",AppHelper.urlEncode(value));
+
+        ApiManager.execute(this, url, new CallbackWithResponse() {
+            @Override
+            public void execute(JSONObject response) {
+                ApiResponse apiResponse = gson.fromJson(response.toString(),ApiResponse.class);
+                if(apiResponse.results != null){
+                    if(apiResponse.results.size() > 0){
+                        applyToMap(apiResponse);
+                    }else{
+                        Toast.makeText(SelectLocationActivity.this, "Can't find address 2", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(SelectLocationActivity.this, "Can't find address 1", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @SuppressLint("RestrictedApi")
+    private void applyToMap(ApiResponse apiResponse) {
+        GeocodingResult result = apiResponse.getResults().get(0);
+        GeocodingResult.Location location = result.getLocations()[0];
+        GeocodingResult.LatLng latLng = location.getLatLng();
+        refreshMapCamera(latLng.getLat(),latLng.getLng());
+        map.clear();
+        map.addMarker(new MarkerOptions().setTitle("School Location").setPosition(new LatLng(latLng.getLat(),latLng.getLng())));
+
+        fab1.setVisibility(View.VISIBLE);
+    }
+
+    private class ApiResponse{
+        private ArrayList<GeocodingResult> results;
+
+        public ApiResponse(ArrayList<GeocodingResult> results) {
+            this.results = results;
+        }
+
+        public ArrayList<GeocodingResult> getResults() {
+            return results;
         }
     }
 
